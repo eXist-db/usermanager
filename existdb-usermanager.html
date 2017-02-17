@@ -1,0 +1,34 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`existdb-usermanager`
+a usermanager for eXistdb
+
+@demo demo/index.html 
+-->
+
+<dom-module id="existdb-usermanager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]</h2>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'existdb-usermanager',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'existdb-usermanager',
+        },
+      },
+
+    });
+  </script>
+</dom-module>
