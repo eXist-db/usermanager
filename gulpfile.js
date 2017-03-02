@@ -90,7 +90,8 @@ var otherPaths = [
     'transforms/**/*',
     'resources/**/*',
     '!resources/css/*',
-    'modules/**/*'
+    'modules/**/*',
+    'bower_components/**/*'
 ];
 
 gulp.task('deploy:other', function () {

@@ -1,34 +1,296 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="bower_components/paper-styles/color.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/social-icons.html">
+<link rel="import" href="bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-password-input/paper-password-input.html">
+<link rel="import" href="bower_components/paper-password-input/match-passwords-validator.html">
+<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+
 
 <!--
 `existdb-usermanager`
 a usermanager for eXistdb
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="existdb-usermanager">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]</h2>
-  </template>
+    <template>
+        <style>
+            :host {
+                --paper-tabs-selection-bar-color: var(--paper-blue-700);
+                @apply(--paper-font-common-base);
+                display: block;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                --iron-icon-fill-color: var(--paper-blue-700);
+                --iron-icon-width: 36px;
+                --iron-icon-height: 36px;
 
-  <script>
-    Polymer({
+            }
 
-      is: 'existdb-usermanager',
+            ul {
+                padding: 0;
+                list-style: none;
+            }
 
-      properties: {
-        prop1: {
-          type: String,
-          value: 'existdb-usermanager',
-        },
-      },
+            li {
+                padding: 10px;
+                background: var(--paper-blue-100);
+                margin: 10px 0;
+                position: relative;
+            }
 
-    });
-  </script>
+            .user, .group {
+                font-weight: 700;
+            }
+
+            .fullname, .description {
+                display: block;
+                font-size: 12px;
+                padding-left: 40px;
+            }
+
+            .fullname::before {
+                content: 'Full Name';
+                padding-right: 10px;
+                font-size: 12px;
+                font-weigth: 300;
+            }
+
+            .description::before {
+                content: 'Description';
+                padding-right: 10px;
+                font-size: 12px;
+                font-weigth: 300;
+            }
+
+            .more {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
+
+            .details {
+                padding: 10px;
+                margin: 10px 0;
+                background: white;
+            }
+
+            paper-toggle-button {
+                margin: 10px 0;
+            }
+            ul.groupMembers li{
+                background: var(--paper-blue-500);
+                color:white;
+                position:relative;
+            }
+            .member-heading{
+                margin-top:20px;
+            }
+            .group-member{
+                padding: 16px;
+            }
+            ul.groupMembers li .remove-group{
+                position: absolute;
+                right:10px;
+                top: 0;
+            }
+
+            paper-item.iron-selected{
+                background: var(--paper-blue-grey-200);
+                color:var(--paper-blue-gray-900);
+            }
+
+            paper-menu-button {
+                position: relative;
+                float:right;
+            }
+            paper-icon-button.addGroup{
+                position: absolute;
+                top: -30px;
+                right: 10px;
+            }
+            paper-button.save{
+                background: var(--paper-blue-500);
+                color:white;
+            }
+        </style>
+        <iron-ajax id="loadUserList"
+                   verbose with-credentials
+                   method="get" handle-as="json"
+                   on-response="_handleUsers"
+                   url="/exist/apps/dashboard/plugins/userManager/api/user/"
+                   on-error="_handleUserListError"
+                   auto></iron-ajax>
+
+        <iron-ajax id="loadGroupList"
+                   verbose with-credentials
+                   method="get" handle-as="json"
+                   on-response="_handleGroups"
+                   url="/exist/apps/dashboard/plugins/userManager/api/group/"
+                   on-error="_handleGroupListError"
+                   auto></iron-ajax>
+
+        <paper-tabs selected="{{selected}}">
+            <paper-tab>Users</paper-tab>
+            <paper-tab>Groups</paper-tab>
+        </paper-tabs>
+
+        <iron-pages selected="[[selected]]">
+            <ul>
+                <template id="userList" is="dom-repeat" items="{{users}}" as="item">
+                    <li>
+                        <iron-icon class="icon" icon="social:person"></iron-icon>
+                        <span class="user" title="User Name">[[item.user]]</span>
+                        <span class="fullname">[[item.fullName]]</span>
+                        <span class="description">[[item.description]]</span>
+                        <paper-icon-button id="moredetail" class="more" icon="expand-more" on-tap="editUser"></paper-icon-button>
+                        <div class="details" id="user-[[item.user]]" hidden>
+                            <paper-input label="User Name" required value="{{item.user}}"></paper-input>
+                            <paper-input label="Full Name" value="{{item.fullName}}"></paper-input>
+                            <paper-input label="Description" value="{{item.description}}"></paper-input>
+                            <match-passwords-validator id="match-passwords-validator"
+                                                       password="[[password]]"></match-passwords-validator>
+                            <paper-password-input label="Password" value="{{password}}"></paper-password-input>
+                            <paper-password-input label="Confirm" auto-validate validator="match-passwords-validator"
+                                                  error-message="Passwords need to match"></paper-password-input>
+                            <paper-toggle-button value="[[item.disabled]]">Account is disabled</paper-toggle-button>
+                            <paper-input label="umask" value="022"></paper-input>
+                            <div class="member-heading">Member of groups</div>
+                            <paper-menu id="memberOf" class="dropdown-content" multi attr-for-selected="label">
+                                <template is="dom-repeat" items="{{groups}}">
+                                    <paper-item label="{{item.group}}">{{item.group}}</paper-item>
+                                </template>
+                            </paper-menu>
+                            <paper-button id="save" class="save" on-tap="_handleSave">save changes</paper-button>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+            <ul>
+                <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
+                    <li>
+                        <iron-icon class="icon" icon="social:people"></iron-icon>
+                        <span class="group" title="Group">[[item.group]]</span>
+                        <span class="description">[[item.description]]</span>
+                        <paper-icon-button class="more" icon="expand-more" on-tap="editGroup"></paper-icon-button>
+                        <div class="details" id="group-[[item.group]]" hidden>
+                            <div>details</div>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </iron-pages>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'existdb-usermanager',
+
+            properties: {
+                selected: {
+                    type: Number,
+                    value: 0,
+                },
+                users: {
+                    type: Array,
+                    value: function () {
+                        return []
+                    }
+                },
+                groups: {
+                    type: Array,
+                    value: function () {
+                        return []
+                    }
+                },
+                groupmember: {
+                    type: Array,
+                    value: []
+                }
+            },
+
+            attached: function () {
+            },
+
+            editUser: function (e) {
+                console.log("edit user ", e.model.get('item.user'))
+                var userid = e.model.get('item.user')
+                this.groupmember = e.model.get('item.groups')
+//                var section = e.target.parentNode.parentNode
+//                this._selectGroups(section)
+                this._selectGroups(e.target)
+                this._toggleDetails('user', userid, e)
+            },
+
+            _selectGroups: function (target) {
+                var section = target.parentNode.parentNode
+                var dropdown = section.querySelector('paper-menu')
+                dropdown.selectedValues = this.groupmember
+            },
+
+
+            editGroup: function (e) {
+                console.log("edit group ", e.model.get('item.group'))
+                var groupid = e.model.get('item.group')
+                this._toggleDetails('group', groupid)
+            },
+
+            _toggleDetails: function (category, itemId, e) {
+                var elem = this.querySelector('#' + category + '-' + itemId)
+                if (elem.hidden) {
+                    elem.hidden = false
+                    e.target.icon='expand-less'
+                    //set selected values - in which group am i?
+                } else {
+                    elem.hidden = true
+                    e.target.icon='expand-more'
+                }
+            },
+
+            _handleUsers: function () {
+                console.log(this.$.loadUserList.lastResponse)
+                this.users = this.$.loadUserList.lastResponse
+            },
+
+            _handleUserListError: function (e) {
+                console.log("error loading users: ", e)
+                //todo
+            },
+
+            _handleGroups: function () {
+                this.groups = this.$.loadGroupList.lastResponse
+
+            },
+
+            _handleGroupListError: function (e) {
+                console.log("error loading users: ", e)
+                //todo
+            },
+
+            _addGroup: function (e) {
+                //todo
+            },
+            
+            _handleSave: function (e) {
+                
+            }
+        });
+    </script>
 </dom-module>
