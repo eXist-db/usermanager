@@ -177,6 +177,7 @@ a usermanager for eXistdb
         <iron-ajax id="loadUserList"
                    verbose with-credentials
                    method="get" handle-as="json"
+                   content-type="application/json"
                    on-response="_handleUsers"
                    url="/exist/apps/dashboard/plugins/userManager/api/user/"
                    on-error="_handleUserListError"
@@ -307,7 +308,7 @@ a usermanager for eXistdb
                     type: Array,
                     notify:true
                 },
-/*
+
                 selectedUser: {
                     type: Object,
                     value: {
@@ -321,7 +322,6 @@ a usermanager for eXistdb
 
                     }
                 },
-*/
                 groups: {
                     type: Array,
                     value: function () {
@@ -332,6 +332,12 @@ a usermanager for eXistdb
                 groupmember: {
                     type: Array,
                     value: []
+                },
+
+                saveUrl:{
+                    type: String,
+                    value: "/exist/apps/dashboard/plugins/userManager/api/user/",
+                    readonly:true
                 }
             },
 
@@ -348,14 +354,15 @@ a usermanager for eXistdb
 
             editUser: function (e) {
                 console.log("edit user ", e.model.get('item.user'))
-                var userid = e.model.get('item.#0')
-                console.log('userid: ', userid)
+//                var userid = e.model.get('item')
+//                console.log('userid: ', userid)
 
                 var item = this.$.userList.itemForElement(e.target);
                 console.log("selectedUser: ", item )
+                this.selectedUser = item
 
-                this.selectedUser = this.users.indexOf(userid)
-                console.log("selectedUser index: ", this.setSelectedUser )
+//                this.selectedUser = this.users.indexOf(userid)
+//                console.log("selectedUser index: ", this.setSelectedUser )
 
 /* keep: using array-selector for master/detail binding - see above
                 var item = this.$.userList.itemForElement(e.target);
@@ -418,11 +425,6 @@ a usermanager for eXistdb
                 //todo
             },
             
-            _handleSaveUser: function (e) {
-                //todo
-                console.log("save user: ", e)
-            },
-
             _handleAddUser: function (e) {
                 console.log("add user: ", e)
                 this.push('users',{user:'',fullName:'',description:'',password:'',disabled:false,umask:'022', groups:[]})
@@ -454,17 +456,26 @@ a usermanager for eXistdb
 
 
             _handleGroupItem: function (e) {
-                var idx = this.users.length -1
+
+                //todo: this does not work yet!
+                var item = this.$.userList.itemForElement(e.model.dataHost.parentNode);
+                var idx = this.users.indexOf(item)
+                console.log("group change idx: ", idx, e.target.label)
+
+//                var idx = this.users.length -1
                 this.push('users.' + idx + '.groups',e.target.label)
-                this.notifyPath('users.' + idx + '.groups')
+                this.notifyPath('users.*')
                 console.log("updated groups ", this.users)
             },
 
             _handleSaveUser: function (e) {
                 //todo
-
-
+                console.log("save user: ", e.model.item, e.model.item.user)
+                this.$.saveUser.body=e.model.item
+                this.$.saveUser.url = this.saveUrl + e.model.item.user
+                this.$.saveUser.generateRequest()
             },
+
             _handleUserSaveError:function (e) {
                 //todo
             }
