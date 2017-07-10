@@ -463,7 +463,7 @@ a usermanager for eXistdb
                 console.log("group change idx: ", idx, e.target.label)
 
 //                var idx = this.users.length -1
-                this.push('users.' + idx + '.groups',e.target.label)
+                this.push('users.#' + idx + '.groups',e.target.label)
                 this.notifyPath('users.*')
                 console.log("updated groups ", this.users)
             },
