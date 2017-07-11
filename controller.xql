@@ -1,4 +1,7 @@
 (:
+    Rewrite/Refactoring by Joern Turner, 2017
+:)
+(:
 Copyright (c) 2012, Adam Retter
 All rights reserved.
 
@@ -24,7 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 :)
-xquery version "3.0";
+xquery version "3.1";
 
 declare namespace exist = "http://exist.sourceforge.net/NS/exist";
 declare namespace json = "http://www.json.org";
@@ -36,6 +39,11 @@ import module namespace jsjson = "http://johnsnelson/json" at "modules/jsjson.xq
 import module namespace login-helper="http://exist-db.org/apps/dashboard/login-helper" at "modules/login-helper.xql";
 
 import module namespace console="http://exist-db.org/xquery/console";
+
+declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+declare option output:method "json";
+declare option output:media-type "application/json";
+
 
 declare variable $local:HTTP_OK := xs:integer(200);
 declare variable $local:HTTP_CREATED := xs:integer(201);
@@ -66,7 +74,7 @@ declare function local:get-location($postfix as xs:string+) {
     string-join(($local:HTTP_API_BASE, $postfix), "/")
 };
 
-declare function local:list-users($user as xs:string?) as element(json:value) {
+declare function local:list-users($user as xs:string?) {
     try{
         if($user)then
             usermanager:list-users($user)
@@ -111,7 +119,10 @@ declare function local:delete-group($group as xs:string) as element(deleted) {
     )
 };
 
-declare function local:update-user($user as xs:string, $request-body) as element() {
+declare function local:update-user($user as xs:string, $request-body as xs:string) as element() {
+    let $log := console:log("update-user " || $user)
+    let $log := console:log($request-body)
+        return
     if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
         (
             response:set-header("Location", local:get-user-location($user)),
@@ -131,7 +142,7 @@ declare function local:update-user($user as xs:string, $request-body) as element
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
-    if(usermanager:update-group($group, jsjson:parse-json($request-body)))then
+    if(usermanager:update-group($group, parse-json($request-body)))then
         (
             response:set-header("Location", local:get-group-location($group)),
             response:set-status-code($local:HTTP_OK),
@@ -150,7 +161,7 @@ declare function local:update-group($group as xs:string, $request-body) as eleme
 };
 
 declare function local:create-user($user as xs:string, $request-body) as element() {
-    let $user := usermanager:create-user(jsjson:parse-json($request-body)) return
+    let $user := usermanager:create-user(parse-json($request-body)) return
         if($user)then
             (
                 response:set-header("Location", local:get-user-location($user)),
@@ -165,7 +176,7 @@ declare function local:create-user($user as xs:string, $request-body) as element
 };
 
 declare function local:create-group($user as xs:string, $request-body) as element() {
-    let $group := usermanager:create-group(jsjson:parse-json($request-body)) return
+    let $group := usermanager:create-group(parse-json($request-body)) return
         if($group)then
             (
                 response:set-header("Location", local:get-group-location($group)),
@@ -225,30 +236,32 @@ else if (ends-with($exist:path, ".html")) then
         util:declare-option("exist:serialize", "method=json media-type=application/json"),
 
         if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
-            local:list-users(request:get-parameter("user", ()))
+            (
+                console:log("get users"),
+                local:list-users(request:get-parameter("user", ()))
+            )
         else if(starts-with($exist:path, "/api/user/"))then
+            let $log := console:log("hit user API")
             let $user := replace($exist:path, "/api/user/", "") return
-
                 if(request:get-method() eq "DELETE")then
                     local:delete-user($user)
-
                 else if(request:get-method() eq "POST")then
                     (
                         response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
                         <error>expected PUT for User from dojox.data.JsonRestStore and not POST</error>
                     )
-
                 else if(request:get-method() eq "PUT") then
+                        let $log := console:log("hit user API PUT")
                         let $body := util:binary-to-string(request:get-data()) return
                             if(usermanager:user-exists($user))then
                             (: update user:)
                                 local:update-user($user, $body)
                             else
                                 local:create-user($user, $body)
-
-                    else if(request:get-method() eq "GET") then
+                    else if(request:get-method() eq "GET") then (
+                            console:log("get users"),
                             local:get-user($user)
-
+                        )
                         else
                             (
                                 response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
@@ -272,6 +285,7 @@ else if (ends-with($exist:path, ".html")) then
                             )
 
                         else if(request:get-method() eq "PUT") then
+                                let $log := console:log(util:binary-to-string(request:get-data()))
                                 let $body := util:binary-to-string(request:get-data()) return
                                     if(usermanager:group-exists($group))then
                                         local:update-group($group, $body)

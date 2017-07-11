@@ -1,4 +1,7 @@
 (:
+    Rewrite/Refactoring by Joern Turner, 2017
+:)
+(:
 Copyright (c) 2012, Adam Retter
 All rights reserved.
 
@@ -24,7 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 :)
-xquery version "3.0";
+xquery version "3.1";
 
 module namespace usermanager = "http://exist-db.org/apps/userManager";
 

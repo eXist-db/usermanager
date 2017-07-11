@@ -35,8 +35,8 @@
                 width: 100%;
                 height: 100%;
                 --iron-icon-fill-color: var(--paper-blue-700);
-                --iron-icon-width: 36px;
-                --iron-icon-height: 36px;
+                --iron-icon-width: 62px;
+                --iron-icon-height: 62px;
                 --paper-icon-button-ink-color: var(--paper-blue-300);
                 max-width: 600;
             }
@@ -48,36 +48,20 @@
 
             li {
                 padding: 10px;
-                background: var(--paper-blue-100);
+                background: var(--paper-grey-50);
                 margin: 10px 0;
                 position: relative;
             }
 
             .user, .group {
-                font-weight: 700;
+                font-weight: 500;
+                font-size:20px;
             }
 
             .fullname, .description {
                 display: block;
                 font-size: 12px;
-                padding-left: 40px;
             }
-
-            /*
-                        .fullname::before {
-                            content: 'Full Name';
-                            padding-right: 10px;
-                            font-size: 12px;
-                            font-weigth: 300;
-                        }
-
-                        .description::before {
-                            content: 'Description';
-                            padding-right: 10px;
-                            font-size: 12px;
-                            font-weigth: 300;
-                        }
-            */
 
             .more {
                 position: absolute;
@@ -181,6 +165,18 @@
                 --paper-fab-background: var(--paper-blue-900);
                 --iron-icon-fill-color: white;
             }
+
+            .user-entry{
+                min-height:54px;
+                position: relative;
+                padding-left: 66px;
+                padding:10px 10px 10px 66px;
+            }
+            .user-icon{
+                position: absolute;
+                left:0;
+                top: 4px;
+            }
         </style>
 
         <iron-ajax id="loadUserList"
@@ -193,17 +189,19 @@
                    auto></iron-ajax>
 
         <iron-ajax id="saveUser"
-                   verbose with-credentials
-                   method="put" handle-as="json"
-                   on-response="_handleSaveUser"
-                   url="/exist/apps/dashboard/plugins/userManager/api/user/"
+                   with-credentials
+                   method="put"
+                   handle-as="json"
+                   on-response="_handleUserSaved"
+                   content-type="application/json"
+                   url="/exist/apps/existdb-usermanager/api/user/"
                    on-error="_handleUserSaveError"></iron-ajax>
 
         <iron-ajax id="loadGroupList"
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
-                   url="/exist/apps/dashboard/plugins/userManager/api/group/"
+                   url="/exist/apps/existdb-usermanager/api/group/"
                    on-error="_handleGroupListError"
                    auto></iron-ajax>
 
@@ -218,14 +216,14 @@
             <ul>
                 <template id="userList" is="dom-repeat" items="{{users}}" as="item">
                     <li class="user-entry">
-                        <iron-icon class="icon" icon="social:person"></iron-icon>
+                        <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
                         <span class="user" title="User Name">{{item.user}}</span>
                         <span class="fullname">{{item.fullName}}</span>
                         <span class="description">{{item.description}}</span>
 
                         <paper-icon-button id="moredetail" class="more" icon="expand-more"
                                            on-tap="_editUser"></paper-icon-button>
-                        <div class="details" hidden>
+                        <div class="details" hidden="[[ishidden(item.user)]]">
                             <paper-input label="User Name" required value="{{item.user}}"
                                          class="username"></paper-input>
                             <paper-input label="Full Name" value="{{item.fullName}}"></paper-input>
@@ -238,11 +236,11 @@
                             <paper-toggle-button class="accountActive" checked$="{{item.disabled}}">Account is disabled
                             </paper-toggle-button>
                             <paper-input label="umask" value="022"></paper-input>
+
                             <div class="member-heading">Member of groups</div>
                             <paper-listbox id="memberOf" multi attr-for-selected="label">
                                 <template is="dom-repeat" items="{{groups}}" as="member">
-                                    <paper-item label="{{member.group}}" on-tap="_handleGroupItem">{{member.group}}
-                                    </paper-item>
+                                    <paper-item label="{{member.group}}" on-tap="_handleGroupItem">{{member.group}}</paper-item>
                                 </template>
                             </paper-listbox>
                             <paper-button id="save" class="save" on-tap="_handleSaveUser">save changes</paper-button>
@@ -345,7 +343,7 @@
 
                     saveUrl: {
                         type: String,
-                        value: "/exist/apps/dashboard/plugins/userManager/api/user/",
+                        value: "/exist/apps/existdb-usermanager/api/user/",
                         readonly: true
                     }
                 };
@@ -355,17 +353,26 @@
                 super.connectedCallback();
             }
 
-            _usersChanged() {
+            ishidden(userName){
+                console.log("ishidden: ", userName);
+                return userName != '';
+            }
+
+            _usersChanged(val, foo) {
+                console.log("val ", val, foo);
 
                 if(this.users.length != 0) {
                     console.log("users changed", this.users)
                     //render must be called to update the UI when a new user has been added to the 'users' array
                     this.$.userList.render()
 
+/*
                     console.log("users changed this ", this);
                     console.log("users changed this ", this.users.length - 1);
-//                    var scope = this.querySelectorAll('.user-entry')[this.users.length - 1]
-                    var scope = this.querySelectorAll('.user-entry')[1]
+                    console.log("######### users changed this ", this.$.userList.get(11));
+*/
+                    var scope = this.$.userList.querySelectorAll('.user-entry')[11];
+                    console.log("last child: ", scope);
                     var user = scope.querySelectorAll('.username')[0]
                     if (user.value == '') {
                         var detail = scope.querySelectorAll('.details')[0]
@@ -448,9 +455,16 @@
 
             _handleAddUser(e){
                 console.log("add user: ", e)
-                this.push('users',{user:'',fullName:'',description:'',password:'',disabled:false,umask:'022', groups:[]})
+                var foo = this.push('users',{user:'',fullName:'',description:'',password:'',disabled:false,umask:'022', groups:[]})
+                console.log("pushed ", foo);
+
                 this.notifyPath('users.*')
-                this.notifyPath('users.#groups')
+//                this.notifyPath('users.#groups')
+            }
+
+            _handleUserSaved() {
+                console.log('_handleUserSaved');
+                //todo
             }
 
             _handleAddGroup(e){
@@ -459,19 +473,38 @@
 
             _handleGroupItem(e){
                 //todo: this does not work yet!
-                var item = this.$.userList.itemForElement(e.model.dataHost.parentNode);
+                console.log("_handleGroups ", e);
+                console.log("_handleGroups ", e.model.get('users.user'));
+                console.log("groups for user ", this.$.userList.itemForElement(e.target));
+//                var item = this.$.userList.itemForElement(e.model.dataHost.parentNode);
+                var item = this.$.userList.itemForElement(e.target);
                 var idx = this.users.indexOf(item)
                 console.log("group change idx: ", idx, e.target.label)
 
+                var entry = this.users[idx];
+                console.log("entry: ", entry);
+
 //                var idx = this.users.length -1
-                this.push('users.#' + idx + '.groups',e.target.label)
+                this.splice('users.' + idx + '.groups',e.target.label)
                 this.notifyPath('users.*')
                 console.log("updated groups ", this.users)
+            }
+
+            _handleSaveUser(e){
+                console.log("save item : ", e.model.item, e.model.item)
+                console.log("save user: ", e.model.item, e.model.item.user)
+                console.log("save user: ", JSON.stringify(e.model.item));
+
+//                this.$.saveUser.body= e.model.item
+                this.$.saveUser.body= JSON.stringify(e.model.item);
+                this.$.saveUser.url = this.saveUrl + e.model.item.user
+                this.$.saveUser.generateRequest()
             }
 
             _handleUserSaveError(e){
                 alert("Error while saving user: " + e);
                 //todo
+
             }
 
         }
