@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 :)
 xquery version "3.0";
 
-module namespace usermanager = "http://exist-db.org/apps/dashboard/userManager";
+module namespace usermanager = "http://exist-db.org/apps/userManager";
 
 import module namespace secman = "http://exist-db.org/xquery/securitymanager";
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
@@ -37,13 +37,13 @@ declare variable $usermanager:METADATA_FULLNAME_KEY := xs:anyURI("http://axschem
 declare variable $usermanager:METADATA_DESCRIPTION_KEY := xs:anyURI("http://exist-db.org/security/description");
 
 declare function usermanager:list-users() as element(json:value) {
-    <json:value>
-        {
-            for $user in secman:list-users()
-            return
-                usermanager:get-user($user)
-        }
-    </json:value>
+        <json:value>
+            {
+                for $user in secman:list-users()
+                return
+                    usermanager:get-user($user)
+            }
+        </json:value>
 };
 
 declare function usermanager:list-users($pattern as xs:string) as element(json:value) {

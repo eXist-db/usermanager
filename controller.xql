@@ -31,15 +31,17 @@ declare namespace json = "http://www.json.org";
 
 import module namespace request = "http://exist-db.org/xquery/request";
 import module namespace util = "http://exist-db.org/xquery/util";
-
-import module namespace usermanager = "http://exist-db.org/apps/dashboard/userManager" at "modules/userManager.xqm";
+import module namespace usermanager = "http://exist-db.org/apps/userManager" at "modules/userManager.xqm";
 import module namespace jsjson = "http://johnsnelson/json" at "modules/jsjson.xqm";
 import module namespace login-helper="http://exist-db.org/apps/dashboard/login-helper" at "modules/login-helper.xql";
+
+import module namespace console="http://exist-db.org/xquery/console";
 
 declare variable $local:HTTP_OK := xs:integer(200);
 declare variable $local:HTTP_CREATED := xs:integer(201);
 declare variable $local:HTTP_NO_CONTENT := xs:integer(204);
 declare variable $local:HTTP_BAD_REQUEST := xs:integer(400);
+declare variable $local:HTTP_FORBIDDEN := xs:integer(403);
 declare variable $local:HTTP_NOT_FOUND := xs:integer(404);
 declare variable $local:HTTP_METHOD_NOT_ALLOWED := xs:integer(405);
 declare variable $local:HTTP_INTERNAL_SERVER_ERROR := xs:integer(500);
@@ -65,10 +67,23 @@ declare function local:get-location($postfix as xs:string+) {
 };
 
 declare function local:list-users($user as xs:string?) as element(json:value) {
-    if($user)then
-        usermanager:list-users($user)
-    else
-        usermanager:list-users()
+    try{
+        if($user)then
+            usermanager:list-users($user)
+        else
+            usermanager:list-users()
+    } catch * {
+        if(contains($err:description, "You must be an authenticated user")) then
+            (
+                response:set-status-code($local:HTTP_FORBIDDEN),
+                <error>Access denied</error>
+            )
+        else
+            (
+                response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
+                <error>{$err:description}</error>
+            )
+    }
 };
 
 declare function local:list-groups($group as xs:string?) as element(json:value) {
@@ -211,7 +226,6 @@ else if (ends-with($exist:path, ".html")) then
 
         if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
             local:list-users(request:get-parameter("user", ()))
-
         else if(starts-with($exist:path, "/api/user/"))then
             let $user := replace($exist:path, "/api/user/", "") return
 
