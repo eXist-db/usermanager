@@ -63,8 +63,8 @@
 
             paper-fab {
                 position: absolute;
-                right: 20px;
-                top:-10px;
+                right: 45px;
+                top:0px;
                 --paper-fab-background: var(--paper-pink-500);
                 --iron-icon-fill-color: var(--paper-grey-50);
             }
@@ -259,7 +259,7 @@
             }
             paper-icon-button.user-back{
                 float:right;
-                margin-right:40px;
+                margin-right:50px;
                 display: block;
             }
 
@@ -315,8 +315,8 @@
             <div id="wrapper">
 
 
-                <iron-pages id="pages" selected="[[selected]]">
-                    <ul>
+                <iron-pages id="pages" selected="{{selected}}">
+                    <ul id="userListPage">
                         <template id="userList" is="dom-repeat" items="{{users}}" as="item">
 
                             <li class="user-entry">
@@ -328,7 +328,7 @@
                             </li>
                         </template>
                     </ul>
-                    <ul>
+                    <ul id="groupListPage">
                         <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
                             <li>
                                 <iron-icon class="icon" icon="social:people"></iron-icon>
@@ -364,7 +364,7 @@
                         </li>
 
                     </ul>
-                    <div class="editUser">
+                    <div id="userPage" class="editUser">
                         <paper-icon-button class="user-back" icon="arrow-back" on-click="_back" autofocus></paper-icon-button>
 
                         <div class="details">
@@ -430,6 +430,8 @@
                     selected: {
                         type: Number,
                         value: 0,
+                        notify:true,
+                        observer: '_pageChanged'
                     },
                     users: {
                         type: Array,
@@ -448,7 +450,6 @@
                             umask: '',
                             disabled: false,
                             groups: [],
-
                         }
                     },
                     groups: {
@@ -469,6 +470,10 @@
                     mode: {
                         type: String,
                         value: 'edit'
+                    },
+                    lastPage:{
+                        type: Number,
+                        value:0
                     }
                 };
             }
@@ -485,7 +490,24 @@
             // ########################## private part ##########################
             // ########################## private part ##########################
             // ########################## private part ##########################
+            _pageChanged(changed){
+                console.log('page changed', changed);
 
+                if(this.lastPage != 0 && changed == 0){
+
+                    this.$.loadUserList.generateRequest();
+                    var elem = this.$.userListPage;
+                    console.log('>>>>>>>>>>>>>>>>> page changed', elem);
+                    $(elem).velocity({ translateX: [ 0, -1000 ] },{duration:400});
+                }
+
+                if(changed == 2){
+                    var elem = this.$.userPage;
+                    $(elem).velocity({ translateX: [ 0, 1000 ] },{duration:400});
+                }
+
+                this.lastPage = this.$.pages.selected;
+            }
 
             // ########## USER ##########
             // ########## USER ##########
@@ -502,13 +524,10 @@
                 var error = this.$.loadUserList.lastError;
                 if (error.status == '403') {
                     this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
-//                    this.$.errorReporter.open();
                 } else {
                     this.$.errorReporter.text = 'Server responded: ' + error.status + ' message: ' + error.message;
                 }
                 this.$.errorReporter.open();
-
-                //                this.$.wrapper.hidden = true;
             }
 
             // ##### USER FUNCTIONS #####
@@ -549,13 +568,23 @@
             _editUser(e) {
                 console.log("edit user ", e.model.get('item.user'))
                 console.log("edit user target ", e.target)
+                console.log("edit user selected user ", this.selectedUser)
 
+
+                // get current item from templated DOM Element
                 var item = this.$.userList.itemForElement(e.target);
                 console.log("selectedUser: ", item)
-                this.selectedUser = item
+                this.selectedUser = item;
 
-                this.groupmember = e.model.get('item.groups')
-                console.log("groupmember: ", this.groupmember);
+                console.log("selectedUser group: ", this.selectedUser.groups)
+
+                if(this.selectedUser.groups == undefined){
+                    this.selectedUser.groups=[];
+                }
+
+//                this.groupmember = e.model.get('item.groups')
+//                console.log("groupmember: ", this.groupmember);
+
                 this._selectGroups(e.target)
 
                 this.$.pages.select(2);
@@ -575,12 +604,10 @@
             }
 
             _handleUserSaved() {
-
                 console.log('_handleUserSaved');
-                this.$.messenger.text = 'changes have been saved.';
+                this.$.messenger.text = 'User ' + this.selectedUser.user + ' has been saved.';
                 this.$.messenger.open();
                 this.$.pages.select(0);
-                this.$.loadUserList.generateRequest();
             }
 
             _handleDeleteUser(e) {
@@ -595,7 +622,6 @@
                 this.$.pages.select(0);
                 this.$.messenger.text = "User " + this.selectedUser.user + " has been deleted";
                 this.$.messenger.open();
-                this.$.loadUserList.generateRequest();
             }
 
 
@@ -649,29 +675,8 @@
 
             editGroup(e) {
                 console.log("edit group ", e.model.get('item.group'));
-
                 var groupid = e.model.get('item.group')
-//                this._toggleDetails(e)
             }
-
-/*
-            _toggleDetails(e) {
-                var target = e.target.parentNode
-                console.log("toggle target ", e);
-                console.log("toggle target ", e.target);
-                console.log("toggle target ", e.target.parentNode);
-                var elem = Polymer.dom(target).querySelector('.details')
-                if (elem.hidden) {
-                    elem.hidden = false
-                    e.target.icon = 'expand-less'
-                    //set selected values - in which group am i?
-                } else {
-                    elem.hidden = true
-                    e.target.icon = 'expand-more'
-                }
-            }
-*/
-
 
             _handleGroups() {
                 this.groups = this.$.loadGroupList.lastResponse
