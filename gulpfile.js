@@ -91,7 +91,8 @@ var otherPaths = [
     'resources/**/*',
     '!resources/css/*',
     'modules/**/*',
-    'bower_components/**/*'
+    'bower_components/**/*',
+    'demo/**/*.html'
 ];
 
 gulp.task('deploy:other', function () {

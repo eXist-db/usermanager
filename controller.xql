@@ -142,7 +142,7 @@ declare function local:update-user($user as xs:string, $request-body as xs:strin
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
-    if(usermanager:update-group($group, parse-json($request-body)))then
+    if(usermanager:update-group($group, jsjson:parse-json($request-body)))then
         (
             response:set-header("Location", local:get-group-location($group)),
             response:set-status-code($local:HTTP_OK),
@@ -161,7 +161,11 @@ declare function local:update-group($group as xs:string, $request-body) as eleme
 };
 
 declare function local:create-user($user as xs:string, $request-body) as element() {
-    let $user := usermanager:create-user(parse-json($request-body)) return
+    let $log := console:log("user " || $user)
+    let $body := parse-json($request-body)
+    let $log := console:log($body)
+    let $user := usermanager:create-user(jsjson:parse-json($request-body)) return
+
         if($user)then
             (
                 response:set-header("Location", local:get-user-location($user)),
@@ -176,7 +180,7 @@ declare function local:create-user($user as xs:string, $request-body) as element
 };
 
 declare function local:create-group($user as xs:string, $request-body) as element() {
-    let $group := usermanager:create-group(parse-json($request-body)) return
+    let $group := usermanager:create-group(jsjson:parse-json($request-body)) return
         if($group)then
             (
                 response:set-header("Location", local:get-group-location($group)),
@@ -243,30 +247,30 @@ else if (ends-with($exist:path, ".html")) then
         else if(starts-with($exist:path, "/api/user/"))then
             let $log := console:log("hit user API")
             let $user := replace($exist:path, "/api/user/", "") return
-                if(request:get-method() eq "DELETE")then
-                    local:delete-user($user)
-                else if(request:get-method() eq "POST")then
-                    (
-                        response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                        <error>expected PUT for User from dojox.data.JsonRestStore and not POST</error>
-                    )
-                else if(request:get-method() eq "PUT") then
-                        let $log := console:log("hit user API PUT")
-                        let $body := util:binary-to-string(request:get-data()) return
-                            if(usermanager:user-exists($user))then
-                            (: update user:)
-                                local:update-user($user, $body)
-                            else
-                                local:create-user($user, $body)
-                    else if(request:get-method() eq "GET") then (
-                            console:log("get users"),
-                            local:get-user($user)
-                        )
+            if(request:get-method() eq "DELETE")then
+                local:delete-user($user)
+            else if(request:get-method() eq "POST")then
+                (
+                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                    <error>expected PUT for User from dojox.data.JsonRestStore and not POST</error>
+                )
+            else if(request:get-method() eq "PUT") then
+                    let $log := console:log("hit user API PUT")
+                    let $body := util:binary-to-string(request:get-data()) return
+                        if(usermanager:user-exists($user))then
+                        (: update user:)
+                            local:update-user($user, $body)
                         else
-                            (
-                                response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                                <error>Unsupported method: {request:get-method()}</error>
-                            )
+                            local:create-user($user, $body)
+                else if(request:get-method() eq "GET") then (
+                        console:log("get users"),
+                        local:get-user($user)
+                    )
+                    else
+                        (
+                            response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                            <error>Unsupported method: {request:get-method()}</error>
+                        )
 
 
         else if($exist:path eq "/api/group/")then
