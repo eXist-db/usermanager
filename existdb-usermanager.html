@@ -490,6 +490,9 @@
                 return 'existdb-usermanager';
             }
 
+            /**
+             * declared properties of this component
+             */
             static get properties() {
                 return {
                     selected: {
@@ -500,7 +503,6 @@
                     users: {
                         type: Array,
                         notify: true,
-//                        observer: '_usersChanged',
                         value: []
                     },
 
@@ -531,14 +533,7 @@
                         type: Array,
                         notify: true,
                         value:[]
-//                        observer: '_groupsChanged'
                     },
-/*
-                    groupmember: {
-                        type: Array,
-                        value: []
-                    },
-*/
 
                     userUrl: {
                         type: String,
@@ -557,12 +552,14 @@
                 };
             }
 
+/*
             static get observers() {
                 return [
                     // Observer method name, followed by a list of dependencies, in parenthesis
                     '_userNameChanged(selectedUser.*, filter)'
                 ]
             }
+*/
 
             connectedCallback() {
                 super.connectedCallback();
@@ -577,30 +574,16 @@
             // ########################## private part ##########################
             // ########################## private part ##########################
 
-            /**
-             * generic ajax error handler.
-             *
-             * @param error - the error object provided by the iron-ajax element.
-             * @private
-             */
-            _handleRequestError(error) {
-                console.log("error during ajax call: ", error);
 
-                if (error.status == '403') {
-                    this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
-                } else if(error.status == '400'){
-                    this.$.errorReporter.text = 'Server responded: ' + error.statusText + ': ' + error.response;
-                } else {
-                    this.$.errorReporter.text = 'Server responded: ' + error.status + ' - ' + error.statusText;
-                }
-                this.$.errorReporter.open();
-
-            }
-
+/*
             _userNameChanged(change){
                 console.log("selected user change ", change);
             }
+*/
 
+            // >>>>>>>>>> PAGE SWITCHING LOGIC AND ANIMATIONS >>>>>>>>>>
+            // >>>>>>>>>> PAGE SWITCHING LOGIC AND ANIMATIONS >>>>>>>>>>
+            // >>>>>>>>>> PAGE SWITCHING LOGIC AND ANIMATIONS >>>>>>>>>>
             _switchPage(page) {
                 if (page == 0) {
                     this._resetUserForm();
@@ -625,9 +608,11 @@
                 }
             }
 
-
+            /**
+             * animation called when form is left by the user either by using the
+             * close
+             */
             _animUserPageOut(page) {
-//                var elem1 = this.$.userPage;
                 var anim = [
                     {
                         e: $(page),
@@ -649,29 +634,42 @@
                     $.Velocity.RunSequence(anim);
                 }, 1);
             }
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
 
-            // ########## USER ##########
-            // ########## USER ##########
-            // ########## USER ##########
+
+
+
+            // >>>>>>>>>> USER >>>>>>>>>>
+            // >>>>>>>>>> USER >>>>>>>>>>
+            // >>>>>>>>>> USER >>>>>>>>>>
+
+            /**
+             * handles userlist loaded from server.
+             */
             _handleUsers() {
                 console.log('_handleUsers', this.$.loadUserList.lastResponse)
                 this.users = this.$.loadUserList.lastResponse
             }
 
+            /**
+             * handles userlist loading errors.
+             */
             _handleUserListError(e) {
                 this._handleRequestError(this.$.loadUserList.lastError);
             }
 
-            // ##### USER FUNCTIONS #####
+            /**
+             * handler for 'add user' button (paper-fab)
+             */
             _handleAddUser(e) {
                 console.log("add user: ", e)
                 console.log("dom repeat ", this.$.userList);
                 e.stopPropagation();
                 e.preventDefault();
 
-                console.log("number of users before: ", this.users.length);
-
-                var foo = this.push('users', {
+                this.push('users', {
                     user: '',
                     fullName: '',
                     description: '',
@@ -681,9 +679,6 @@
                     groups: []
                 })
                 var userCnt = this.users.length;
-                console.log("number of users after: ", this.users.length);
-                console.log("number of users after: ", this.users[userCnt - 1]);
-
 
                 console.log('selected user: ', this.selectedUser);
                 this._resetUserForm();
@@ -691,18 +686,20 @@
                 this._switchPage(2);
             }
 
+
+            /**
+             * resets the user form.
+             */
             _resetUserForm() {
                 //reset eventual pre-existing values
                 this.$.confirm.value = "";
                 this.selectedUser = this.users[this.users.length - 1];
             }
 
+            /**
+             * editing a user entry. Triggered by user click on an entry in the list.
+             */
             _editUser(e) {
-//                console.log("edit user ", e.model.get('item.user'))
-//                console.log("edit user target ", e.target)
-//                console.log("edit user selected user ", this.selectedUser)
-
-
                 // get current item from templated DOM Element
                 var item = this.$.userList.itemForElement(e.target);
                 console.log("selectedUser: ", item)
@@ -718,6 +715,9 @@
                 this._switchPage(2);
             }
 
+            /**
+             * handler for saving a user. Triggered by 'save' button on user form.
+             */
             _handleSaveUser(e) {
                 var valid = this.$.userForm.validate();
 
@@ -731,6 +731,9 @@
                 }
             }
 
+            /**
+             * handler called after user has been saved to the db.
+             */
             _handleUserSaved() {
                 console.log('_handleUserSaved');
                 this.$.messenger.text = 'User ' + this.selectedUser.user + ' has been saved.';
@@ -738,10 +741,16 @@
                 this._switchPage(0);
             }
 
+            /**
+             * error-handler for user saving.
+             */
             _handleSaveUserError(e){
                 this._handleRequestError(this.$.saveUser.lastError);
             }
 
+            /**
+             * handler for deleting a user. Triggered by 'delete' button on user form.
+             */
             _handleDeleteUser(e) {
                 console.log("_handleDeleteUser");
                 if (confirm('Really delete this user?')) {
@@ -750,53 +759,56 @@
                 }
             }
 
+            /**
+             * request handler called after user has been deleted.
+             */
             _handleUserDeleted() {
                 this._switchPage(0);
                 this.$.messenger.text = "User " + this.selectedUser.user + " has been deleted";
                 this.$.messenger.open();
             }
 
+            /**
+             * request handler for
+             */
             _handleUserDeleteError(){
                 this._handleRequestError(this.$.deleteUser.lastError);
             }
 
-/*
-            _isDeletable(userName) {
-                return this.mode = 'edit';
-            }
-*/
-
+            /**
+             * switches back to userlist when being on user form.
+             */
             _userBack(e) {
                 this._switchPage(0);
 
             }
+
+            /**
+             * switches back to grouplist when being on group form.
+             */
             _groupBack(e){
                 this._switchPage(1);
             }
 
-/*
-            _usersChanged(val, foo) {
-                console.log("############# users changed");
-                console.log("val ", val, foo);
-                this.$.userList.render()
-            }
-
-            _groupsChanged() {
-                console.log("groups changed", this.groups)
-                this.$.groupList.render()
-            }
-*/
-
+            /**
+             * resets the group form. paper-listbox otherwise keeps its values and explicitly needs to be reset.
+             */
             _resetGroupForm() {
                 //reset eventual pre-existing values
                 this.selectedGroup = this.groups[this.groups.length - 1];
                 this.$.groupMembers.selectedValues=[];
             }
 
+            /**
+             * initializes the paper-listbox values for a users' groups.
+             */
             _selectUserGroups() {
                 this.$.memberOf.selectedValues = this.selectedUser.groups;
             }
 
+            /**
+             * handles userlist loaded from server.
+             */
             _selectGroupMembers() {
                 console.log("_selectGroupMembers ", this.selectedGroup);
                 console.log("_selectGroupMembers ", this.selectedGroup.members);
@@ -834,6 +846,9 @@
                 this._handleRequestError(this.$.loadGroupList.lastError);
             }
 
+            /**
+             * handler called by 'save' button
+             */
             _handleAddGroup(e) {
                 console.log("add group: ", e)
                 console.log("dom repeat ", this.$.groupList);
@@ -855,6 +870,9 @@
                 this._switchPage(3);
             }
 
+            /**
+             * handler calling server for saving a group.
+             */
             _handleSaveGroup(){
                 console.log("_handleSaveGroup");
                 var valid = this.$.groupForm.validate();
@@ -878,6 +896,9 @@
                 }
             }
 
+            /**
+             * handler called after group has been saved on server.
+             */
             _handleGroupSaved(){
                 console.log('_handleUserSaved');
                 this.$.messenger.text = 'Group ' + this.selectedGroup.group + ' has been saved.';
@@ -885,10 +906,16 @@
                 this._switchPage(1);
             }
 
+            /**
+             * error-handler for deletion of groups.
+             */
             _handleSaveGroupError(){
                 this._handleRequestError(this.$.saveGroup.lastError);
             }
 
+            /**
+             * handler calling server for group deletion.
+             */
             _handleDeleteGroup(){
                 console.log("_handleDeleteGroupr");
                 if (confirm('Really delete this group?')) {
@@ -898,19 +925,46 @@
 
             }
 
+            /**
+             * handler called after group has been deleted.
+             */
             _handleGroupDeleted(){
                 this._switchPage(1);
                 this.$.messenger.text = "Group " + this.selectedGroup.group + " has been deleted";
                 this.$.messenger.open();
             }
 
+            /**
+             * error-handler for group deletion.
+             */
             _handleGroupDeletedError(){
                 this._handleRequestError(this.$.deleteGroup.lastError);
             }
 
+
             _closeToast(e){
                 this.$.errorReporter.close();
             }
+
+            /**
+             * generic ajax error handler.
+             *
+             * @param error - the error object provided by the iron-ajax element.
+             * @private
+             */
+            _handleRequestError(error) {
+                console.log("error during ajax call: ", error);
+
+                if (error.status == '403') {
+                    this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
+                } else if(error.status == '400'){
+                    this.$.errorReporter.text = 'Server responded: ' + error.statusText + ': ' + error.response;
+                } else {
+                    this.$.errorReporter.text = 'Server responded: ' + error.status + ' - ' + error.statusText;
+                }
+                this.$.errorReporter.open();
+            }
+
 
         }
 
