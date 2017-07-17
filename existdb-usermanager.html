@@ -882,6 +882,13 @@
 
             }
 
+            _handleGroupSaved(){
+                console.log('_handleUserSaved');
+                this.$.messenger.text = 'Group ' + this.selectedGroup.group + ' has been saved.';
+                this.$.messenger.open();
+                this._switchPage(1);
+            }
+
             _handleSaveGroupError(){
                 this._handleRequestError(this.$.saveGroup.lastError);
             }
