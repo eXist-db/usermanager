@@ -237,7 +237,9 @@
                 min-height: 54px;
                 position: relative;
                 padding: 10px 10px 10px 100px;
+                cursor:pointer;
             }
+
 
             .user-icon, .group-icon {
                 position: absolute;
@@ -443,7 +445,8 @@
                             <h2>Group</h2>
                             <iron-form id="groupForm" allow-redirect="false">
                                 <form action="" method="">
-                                    <paper-input label="Group Name" value="{{selectedGroup.group}}"></paper-input>
+                                    <paper-input label="Group Name*" value="{{selectedGroup.group}}" pattern="[A-Za-z0-9_-]+"
+                                                 error-message="only the chars A-Z, a-z and numbers are allowed as group name" auto-validate auto-focus></paper-input>
                                     <paper-input label="Description"
                                                  value="{{selectedGroup.description}}"></paper-input>
                                     <div class="member-heading">Members of this group</div>
@@ -455,8 +458,7 @@
                                             </paper-item>
                                         </template>
                                     </paper-listbox>
-                                    <paper-button class="save" on-tap="_handleSaveGroup">save
-                                    </paper-button>
+                                    <paper-button class="save" on-tap="_handleSaveGroup">save</paper-button>
                                     <paper-button class="delete" on-tap="_handleDeleteGroup">delete group</paper-button>
                                 </form>
                             </iron-form>
@@ -601,7 +603,7 @@
 
             _switchPage(page) {
                 if (page == 0) {
-                    this._resetForm();
+                    this._resetUserForm();
                     this._animUserPageOut(this.$.userPage);
                 } else if( page == 1){
                     this._animUserPageOut(this.$.groupPage);
@@ -684,12 +686,12 @@
 
 
                 console.log('selected user: ', this.selectedUser);
-                this._resetForm();
+                this._resetUserForm();
                 this._selectUserGroups();
                 this._switchPage(2);
             }
 
-            _resetForm() {
+            _resetUserForm() {
                 //reset eventual pre-existing values
                 this.$.confirm.value = "";
                 this.selectedUser = this.users[this.users.length - 1];
@@ -785,6 +787,12 @@
             }
 */
 
+            _resetGroupForm() {
+                //reset eventual pre-existing values
+                this.selectedGroup = this.groups[this.groups.length - 1];
+                this.$.groupMembers.selectedValues=[];
+            }
+
             _selectUserGroups() {
                 this.$.memberOf.selectedValues = this.selectedUser.groups;
             }
@@ -826,11 +834,6 @@
                 this._handleRequestError(this.$.loadGroupList.lastError);
             }
 
-            _addGroup(e) {
-                //todo
-            }
-
-
             _handleAddGroup(e) {
                 console.log("add group: ", e)
                 console.log("dom repeat ", this.$.groupList);
@@ -847,15 +850,13 @@
                 this.selectedGroup = this.groups[this.groups.length -1];
 
                 console.log('selected group: ', this.selectedGroup);
-                this._resetForm();
+                this._resetGroupForm();
                 this._selectUserGroups();
                 this._switchPage(3);
-
             }
 
             _handleSaveGroup(){
                 console.log("_handleSaveGroup");
-                //todo
                 var valid = this.$.groupForm.validate();
 
                 if (valid) {
@@ -869,17 +870,12 @@
                     console.log("members: ", members);
                     this.selectedGroup.members = members;
 
-//                    this.selectedGroup.members = this.$.groupMembers.selectedValues;
                     console.log("saving... ", this.selectedGroup)
-//
                     this.$.saveGroup.body = JSON.stringify(this.selectedGroup);
-                    console.log('body ', this.$.saveGroup.body);
-//
+
                     this.$.saveGroup.url = this.groupUrl + this.selectedGroup.group;
                     this.$.saveGroup.generateRequest();
                 }
-
-
             }
 
             _handleGroupSaved(){
@@ -894,7 +890,6 @@
             }
 
             _handleDeleteGroup(){
-                //todo
                 console.log("_handleDeleteGroupr");
                 if (confirm('Really delete this group?')) {
                     this.$.deleteGroup.url = this.groupUrl + this.selectedGroup.group;
@@ -904,8 +899,9 @@
             }
 
             _handleGroupDeleted(){
-                //todo
-
+                this._switchPage(1);
+                this.$.messenger.text = "Group " + this.selectedGroup.group + " has been deleted";
+                this.$.messenger.open();
             }
 
             _handleGroupDeletedError(){
@@ -915,10 +911,6 @@
             _closeToast(e){
                 this.$.errorReporter.close();
             }
-
-
-
-
 
         }
 
