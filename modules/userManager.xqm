@@ -33,8 +33,11 @@ module namespace usermanager = "http://exist-db.org/apps/userManager";
 
 import module namespace secman = "http://exist-db.org/xquery/securitymanager";
 import module namespace xmldb = "http://exist-db.org/xquery/xmldb";
+import module namespace console="http://exist-db.org/xquery/console";
+
 
 declare namespace json = "http://www.json.org";
+declare namespace test="http://exist-db.org/xquery/xqsuite";
 
 declare variable $usermanager:METADATA_FULLNAME_KEY := xs:anyURI("http://axschema.org/namePerson");
 declare variable $usermanager:METADATA_DESCRIPTION_KEY := xs:anyURI("http://exist-db.org/security/description");
@@ -136,6 +139,8 @@ declare function usermanager:create-user($user-json as element(json)) as xs:stri
 };
 
 declare function usermanager:update-user($user-name as xs:string, $user-json as element(json)) as xs:boolean {
+    let $log := console:log("update-user....")
+    let $log := console:log($user-json)
     let $user := $user-json/pair[@name eq "user"] return
     
         if($user-name ne $user)then
@@ -222,7 +227,7 @@ declare function usermanager:create-group($group-json as element(json)) as xs:st
 };
 
 declare function usermanager:update-group($group-name as xs:string, $group-json as element(json)) as xs:boolean {
-    
+    let $log := console:log($group-json)
     let $group := $group-json/pair[@name eq "group"] return
     
         if($group-name ne $group)then

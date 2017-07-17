@@ -12,6 +12,7 @@
 <link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="bower_components/paper-password-input/paper-password-input.html">
 <link rel="import" href="bower_components/paper-password-input/match-passwords-validator.html">
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
@@ -28,7 +29,6 @@
 <link rel="import" href="existdb-user.html">
 
 
-
 <link rel="import" href="bower_components/app-layout/app-drawer/app-drawer.html">
 
 
@@ -37,12 +37,11 @@
 <script src="bower_components/velocity/velocity.ui.min.js"></script>
 
 
-
 <dom-module id="existdb-usermanager">
     <template>
         <style>
             :host {
-                --paper-tabs-selection-bar-color: var(--paper-grey-900);
+                --paper-tabs-selection-bar-color: var(--paper-pink-500);
                 @apply(--paper-font-common-base);
                 display: block;
                 padding: 0;
@@ -53,34 +52,46 @@
                 --iron-icon-width: 62px;
                 --iron-icon-height: 62px;
                 --paper-icon-button-ink-color: var(--paper-grey-700);
+                --paper-tabs-selection-bar:{
+                    border-width: 5px;
+                };
                 /*max-width: 600;*/
             }
-            app-header{
+
+            app-header {
                 background: rgb(0, 136, 204);
-                padding:0px;
-                color:white;
+                padding: 0px;
+                color: white;
             }
 
+            paper-tab{
+                font-size:24px;
+                font-weight: 400;
+            }
+
+
             paper-fab {
-                position: absolute;
+                position: fixed;
                 right: 45px;
-                top:0px;
+                bottom: 40px;
+                z-index: 100;
                 --paper-fab-background: var(--paper-pink-500);
                 --iron-icon-fill-color: var(--paper-grey-50);
             }
 
-            paper-icon-button{
+            paper-icon-button {
                 width: 48px;
                 height: 48px;
                 background: var(--paper-grey-200);
-                border-radius:24px;
+                border-radius: 24px;
             }
 
-            h1{
+            h1 {
                 @apply(--paper-font-headline);
-                padding-left:20px;
+                padding-left: 20px;
             }
-            h2{
+
+            h2 {
                 @apply(--paper-font-headline);
             }
 
@@ -108,7 +119,6 @@
                 font-size: 12px;
             }
 
-
             paper-icon-button.more {
                 position: absolute;
                 top: 10px;
@@ -117,7 +127,7 @@
 
             .details {
                 padding: 40px;
-                margin: 20px 40px 20px 0;
+                margin: 0px 40px 20px 0;
                 background: white;
             }
 
@@ -219,18 +229,17 @@
                 background: transparent;
             }
 
-
-            paper-listbox.groupsOfUser {
+            paper-listbox {
                 border: 1px solid var(--paper-grey-300);
             }
 
-            .user-entry {
+            .user-entry, .group-entry {
                 min-height: 54px;
                 position: relative;
                 padding: 10px 10px 10px 100px;
             }
 
-            .user-icon {
+            .user-icon, .group-icon {
                 position: absolute;
                 left: 10px;
                 top: 10px;
@@ -252,17 +261,31 @@
                 --paper-toast-background-color: var(--paper-red-500);
                 --paper-toast-color: white;
             }
+            paper-toast.errorReporter a{
+                float:right;
+            }
 
-            .editUser{
-                width:100%;
+
+            .editUser, .editGroup {
+                width: 100%;
                 height: 100%;
             }
-            paper-icon-button.user-back{
-                float:right;
-                margin-right:50px;
+
+            paper-icon-button.back, paper-icon-button.back {
+                position: fixed;
+                top: 20px;
+                right: -32px;
+                z-index: 100;
+                margin-right: 50px;
                 display: block;
             }
 
+            paper-button.save.disabled{
+                color:var(--paper-grey-300);
+            }
+            .manager{
+                float:right;
+            }
         </style>
 
         <iron-ajax id="loadUserList"
@@ -271,7 +294,7 @@
                    handle-as="json"
                    on-response="_handleUsers"
                    url="/exist/apps/existdb-usermanager/api/user/"
-                   on-error="_handleRequestError"
+                   on-error="_handleUserListError"
                    auto></iron-ajax>
 
         <iron-ajax id="saveUser"
@@ -281,7 +304,7 @@
                    on-response="_handleUserSaved"
                    content-type="application/json"
                    url="/exist/apps/existdb-usermanager/api/user/"
-                   on-error="_handleRequestError"></iron-ajax>
+                   on-error="_handleSaveUserError"></iron-ajax>
 
         <iron-ajax id="deleteUser"
                    with-credentials
@@ -290,22 +313,42 @@
                    on-response="_handleUserDeleted"
                    content-type="application/json"
                    url="/exist/apps/existdb-usermanager/api/user/"
-                   on-error="_handleRequestError"></iron-ajax>
+                   on-error="_handleUserDeleteError"></iron-ajax>
 
         <iron-ajax id="loadGroupList"
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
                    url="/exist/apps/existdb-usermanager/api/group/"
-                   on-error="_handleRequestError"
-        ></iron-ajax>
+                   on-error="_handleGroupListError"
+                    auto></iron-ajax>
 
-        <array-selector id="selector" items="{{users}}" selected="{{selectedUser}}" multi toggle></array-selector>
+        <iron-ajax id="saveGroup"
+                   with-credentials
+                   method="put"
+                   handle-as="json"
+                   on-response="_handleGroupSaved"
+                   content-type="application/json"
+                   url="/exist/apps/existdb-usermanager/api/group/"
+                   on-error="_handleSaveGroupError"></iron-ajax>
+
+        <iron-ajax id="deleteGroup"
+                   with-credentials
+                   method="delete"
+                   handle-as="json"
+                   on-response="_handleGroupDeleted"
+                   content-type="application/json"
+                   url="/exist/apps/existdb-usermanager/api/user/"
+                   on-error="_handleGroupDeletedError"></iron-ajax>
+
+
+        <array-selector id="userselector" items="{{users}}" selected="{{selectedUser}}" multi toggle></array-selector>
+        <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi toggle></array-selector>
 
         <app-header-layout>
             <app-header slot="header" fixed>
                 <h1>User Manager</h1>
-                <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
+                <!--<paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>-->
                 <paper-tabs selected="{{selected}}">
                     <paper-tab>Users</paper-tab>
                     <paper-tab>Groups</paper-tab>
@@ -317,73 +360,63 @@
 
                 <iron-pages id="pages" selected="{{selected}}">
                     <ul id="userListPage">
+                        <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
+
                         <template id="userList" is="dom-repeat" items="{{users}}" as="item">
 
-                            <li class="user-entry">
+                            <li class="user-entry" on-tap="_editUser">
                                 <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
                                 <span class="user" title="User Name">{{item.user}}</span>
                                 <span class="fullname">{{item.fullName}}</span>
                                 <span class="description">{{item.description}}</span>
-                                <paper-icon-button id="moredetail" class="more" icon="arrow-forward" on-click="_editUser"></paper-icon-button>
+                                <!--<paper-icon-button id="moredetail" class="more" icon="arrow-forward" ></paper-icon-button>-->
                             </li>
                         </template>
                     </ul>
+
                     <ul id="groupListPage">
+                        <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
+
                         <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
-                            <li>
-                                <iron-icon class="icon" icon="social:people"></iron-icon>
+                            <li class="group-entry" on-tap="_editGroup">
+                                <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
                                 <span class="group" title="Group">{{item.group}}</span>
                                 <span class="description">{{item.description}}</span>
-                                <paper-icon-button class="more" icon="expand-more" on-tap="editGroup"></paper-icon-button>
-                                <div class="details" hidden>
-                                    <div class="details">
-                                        <paper-input label="Group Name" value="{{item.group}}"></paper-input>
-                                        <paper-input label="Description" value="{{item.description}}"></paper-input>
-                                        <paper-item class="membersHeader">
-                                            <span style="width: 50%;">Users in this Group</span>
-                                            <span style="width: 50%;text-align: right;display: inline-block;">Group Manager</span>
-                                        </paper-item>
-                                        <template is="dom-repeat" items="{{item.groups}}" as="member">
-                                            <paper-item class="membersOfGroup">
-                                                <span>{{member.member}}</span>
-                                                <paper-toggle-button checked$="{{member.isManager}}"></paper-toggle-button>
-                                            </paper-item>
-                                        </template>
-                                        <paper-button id="saveGroup" class="save" on-tap="_handleSaveGroup">save changes
-                                        </paper-button>
-
-                                        </table>
-                                        <!--<paper-toggle-button value="[[item.disabled]]">Account is disabled</paper-toggle-button>-->
-
-                                    </div>
-                                </div>
+<!--
+                                <paper-icon-button class="more" icon="expand-more"
+                                                   on-tap="editGroup"></paper-icon-button>
+-->
                             </li>
                         </template>
-                        <li>
-                            <paper-fab id="addGroup" mini icon="add" on-tap="_handleAddGroup"></paper-fab>
-                        </li>
-
                     </ul>
+
                     <div id="userPage" class="editUser">
-                        <paper-icon-button class="user-back" icon="arrow-back" on-click="_back" autofocus></paper-icon-button>
+                        <paper-icon-button class="back" icon="close" on-click="_userBack"
+                                           autofocus></paper-icon-button>
 
                         <div class="details">
                             <h2>User</h2>
                             <iron-form id="userForm" allow-redirect="false">
                                 <form action="" method="">
-                                    <paper-input id="userInput" label="User Name" value="{{selectedUser.user}}"
-                                                 class="username" required></paper-input>
+                                    <paper-input id="userInput" label="User Name*" value="{{selectedUser.user}}"
+                                                     class="username" pattern="[A-Za-z0-9_-]+"
+                                                     error-message="only the chars A-Z, a-z and numbers are allowed as username" auto-validate auto-focus></paper-input>
                                     <paper-input label="Full Name" value="{{selectedUser.fullName}}"></paper-input>
                                     <paper-input label="Description" value="{{selectedUser.description}}"></paper-input>
 
-                                    <match-passwords-validator id="match-passwords-validator" password="[[selectedUser.password]]"></match-passwords-validator>
+                                    <match-passwords-validator id="match-passwords-validator"
+                                                               password="[[selectedUser.password]]"></match-passwords-validator>
                                     <paper-password-input label="Password"
                                                           value="{{selectedUser.password}}"></paper-password-input>
                                     <paper-password-input id="confirm" label="Confirm" auto-validate
                                                           validator="match-passwords-validator"
                                                           error-message="Passwords need to match"></paper-password-input>
 
-                                    <paper-toggle-button class="accountActive" checked$="{{selectedUser.disabled}}">Account is disabled</paper-toggle-button>
+<!--
+                                    <paper-toggle-button class="accountActive" checked="{{selectedUser.disabled}}">
+                                        Account is disabled
+                                    </paper-toggle-button>
+-->
                                     <paper-input label="umask" value="{{selectedUser.umask}}"></paper-input>
 
                                     <div class="member-heading">Member of groups</div>
@@ -401,13 +434,43 @@
                         </div>
 
                     </div>
+
+                    <div id="groupPage" class="editGroup">
+                        <paper-icon-button class="back" icon="close" on-click="_groupBack"
+                                           autofocus></paper-icon-button>
+
+                        <div class="details">
+                            <h2>Group</h2>
+                            <iron-form id="groupForm" allow-redirect="false">
+                                <form action="" method="">
+                                    <paper-input label="Group Name" value="{{selectedGroup.group}}"></paper-input>
+                                    <paper-input label="Description"
+                                                 value="{{selectedGroup.description}}"></paper-input>
+                                    <div class="member-heading">Members of this group</div>
+                                    <paper-listbox id="groupMembers" multi attr-for-selected="label">
+                                        <template is="dom-repeat" items="[[users]]" as="member">
+                                            <paper-item label="[[member.user]]">
+                                                <span>[[member.user]]</span>
+                                                <!--<paper-toggle-button class="manager" checked$="{{member.isManager}}"></paper-toggle-button>-->
+                                            </paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                    <paper-button class="save" on-tap="_handleSaveGroup">save
+                                    </paper-button>
+                                    <paper-button class="delete" on-tap="_handleDeleteGroup">delete group</paper-button>
+                                </form>
+                            </iron-form>
+                        </div>
+                    </div>
                 </iron-pages>
             </div>
 
 
         </app-header-layout>
         <paper-toast id="messenger" class="messenger" text=""></paper-toast>
-        <paper-toast id="errorReporter" class="errorReporter" text="" duration="0"></paper-toast>
+        <paper-toast id="errorReporter" class="errorReporter" text="" duration="0">
+            <a href="#" on-tap="_closeToast">close</a>
+        </paper-toast>
     </template>
 
     <script>
@@ -430,13 +493,12 @@
                     selected: {
                         type: Number,
                         value: 0,
-                        notify:true,
                         observer: '_pageChanged'
                     },
                     users: {
                         type: Array,
                         notify: true,
-                        observer: '_usersChanged',
+//                        observer: '_usersChanged',
                         value: []
                     },
 
@@ -452,37 +514,59 @@
                             groups: [],
                         }
                     },
+                    selectedGroup:{
+                        type: Object,
+                        value: {
+                            group:'',
+                            description:'',
+                            members: [{
+                                member: '',
+                                isManager: false
+                            }]
+                        }
+                    },
                     groups: {
                         type: Array,
                         notify: true,
-                        observer: '_groupsChanged'
+                        value:[]
+//                        observer: '_groupsChanged'
                     },
+/*
                     groupmember: {
                         type: Array,
                         value: []
                     },
+*/
 
                     userUrl: {
                         type: String,
                         value: "/exist/apps/existdb-usermanager/api/user/",
                         readonly: true
                     },
+                    groupUrl: {
+                        type: String,
+                        value: "/exist/apps/existdb-usermanager/api/group/",
+                        readonly: true
+                    },
                     mode: {
                         type: String,
                         value: 'edit'
                     },
-                    lastPage:{
-                        type: Number,
-                        value:0
-                    }
                 };
+            }
+
+            static get observers() {
+                return [
+                    // Observer method name, followed by a list of dependencies, in parenthesis
+                    '_userNameChanged(selectedUser.*, filter)'
+                ]
             }
 
             connectedCallback() {
                 super.connectedCallback();
             }
 
-            ready(){
+            ready() {
                 super.ready();
             }
 
@@ -490,23 +574,78 @@
             // ########################## private part ##########################
             // ########################## private part ##########################
             // ########################## private part ##########################
-            _pageChanged(changed){
-                console.log('page changed', changed);
 
-                if(this.lastPage != 0 && changed == 0){
+            /**
+             * generic ajax error handler.
+             *
+             * @param error - the error object provided by the iron-ajax element.
+             * @private
+             */
+            _handleRequestError(error) {
+                console.log("error during ajax call: ", error);
 
+                if (error.status == '403') {
+                    this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
+                } else if(error.status == '400'){
+                    this.$.errorReporter.text = 'Server responded: ' + error.statusText + ': ' + error.response;
+                } else {
+                    this.$.errorReporter.text = 'Server responded: ' + error.status + ' - ' + error.statusText;
+                }
+                this.$.errorReporter.open();
+
+            }
+
+            _userNameChanged(change){
+                console.log("selected user change ", change);
+            }
+
+            _switchPage(page) {
+                if (page == 0) {
+                    this._resetForm();
+                    this._animUserPageOut(this.$.userPage);
+                } else if( page == 1){
+                    this._animUserPageOut(this.$.groupPage);
+                } else if (page == 2) {
+                    // user edit page
+                    this._animUserPageIn(this.$.userPage);
+                } else if( page == 3){
+                    this._animUserPageIn(this.$.groupPage);
+                }
+                this.$.pages.select(page);
+            }
+
+            _pageChanged(page){
+                console.log('_pageChanged: ', page);
+                if (page == 0){
                     this.$.loadUserList.generateRequest();
-                    var elem = this.$.userListPage;
-                    console.log('>>>>>>>>>>>>>>>>> page changed', elem);
-                    $(elem).velocity({ translateX: [ 0, -1000 ] },{duration:400});
+                } else if( page == 1){
+                    this.$.loadGroupList.generateRequest();
                 }
+            }
 
-                if(changed == 2){
-                    var elem = this.$.userPage;
-                    $(elem).velocity({ translateX: [ 0, 1000 ] },{duration:400});
-                }
 
-                this.lastPage = this.$.pages.selected;
+            _animUserPageOut(page) {
+//                var elem1 = this.$.userPage;
+                var anim = [
+                    {
+                        e: $(page),
+                        p: "transition.expandOut",
+                        o: { duration: 200, sequenceQueue: false}
+                    }
+                ];
+                setTimeout(function () {
+                    $.Velocity.RunSequence(anim);
+                }, 1);
+            }
+
+            _animUserPageIn(page){
+                var anim = [
+                    {e: $(page), p: "scroll", o: {offset: -120, duration: 10, sequenceQueue: true}},
+                    {e: $(page), p: "transition.expandIn", o: {duration: 400}}
+                ];
+                setTimeout(function () {
+                    $.Velocity.RunSequence(anim);
+                }, 1);
             }
 
             // ########## USER ##########
@@ -515,19 +654,10 @@
             _handleUsers() {
                 console.log('_handleUsers', this.$.loadUserList.lastResponse)
                 this.users = this.$.loadUserList.lastResponse
-                this.$.loadGroupList.generateRequest();
             }
 
-            _handleRequestError(e) {
-                console.log("error loading users: ", e);
-                console.log("error: ", this.$.loadUserList.lastError);
-                var error = this.$.loadUserList.lastError;
-                if (error.status == '403') {
-                    this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
-                } else {
-                    this.$.errorReporter.text = 'Server responded: ' + error.status + ' message: ' + error.message;
-                }
-                this.$.errorReporter.open();
+            _handleUserListError(e) {
+                this._handleRequestError(this.$.loadUserList.lastError);
             }
 
             // ##### USER FUNCTIONS #####
@@ -550,25 +680,25 @@
                 })
                 var userCnt = this.users.length;
                 console.log("number of users after: ", this.users.length);
-                console.log("number of users after: ", this.users[userCnt-1]);
+                console.log("number of users after: ", this.users[userCnt - 1]);
 
 
                 console.log('selected user: ', this.selectedUser);
                 this._resetForm();
-                this._selectGroups();
-                this.$.pages.select(2);
+                this._selectUserGroups();
+                this._switchPage(2);
             }
 
-            _resetForm(){
+            _resetForm() {
                 //reset eventual pre-existing values
                 this.$.confirm.value = "";
-                this.selectedUser = this.users[this.users.length-1];
+                this.selectedUser = this.users[this.users.length - 1];
             }
 
             _editUser(e) {
-                console.log("edit user ", e.model.get('item.user'))
-                console.log("edit user target ", e.target)
-                console.log("edit user selected user ", this.selectedUser)
+//                console.log("edit user ", e.model.get('item.user'))
+//                console.log("edit user target ", e.target)
+//                console.log("edit user selected user ", this.selectedUser)
 
 
                 // get current item from templated DOM Element
@@ -578,22 +708,18 @@
 
                 console.log("selectedUser group: ", this.selectedUser.groups)
 
-                if(this.selectedUser.groups == undefined){
-                    this.selectedUser.groups=[];
+                if (this.selectedUser.groups == undefined) {
+                    this.selectedUser.groups = [];
                 }
 
-//                this.groupmember = e.model.get('item.groups')
-//                console.log("groupmember: ", this.groupmember);
-
-                this._selectGroups(e.target)
-
-                this.$.pages.select(2);
+                this._selectUserGroups(e.target)
+                this._switchPage(2);
             }
 
             _handleSaveUser(e) {
                 var valid = this.$.userForm.validate();
 
-                if(valid){
+                if (valid) {
                     console.log("saving... ", this.selectedUser)
                     this.$.saveUser.body = JSON.stringify(this.selectedUser);
                     console.log('body ', this.$.saveUser.body);
@@ -607,84 +733,97 @@
                 console.log('_handleUserSaved');
                 this.$.messenger.text = 'User ' + this.selectedUser.user + ' has been saved.';
                 this.$.messenger.open();
-                this.$.pages.select(0);
+                this._switchPage(0);
+            }
+
+            _handleSaveUserError(e){
+                this._handleRequestError(this.$.saveUser.lastError);
             }
 
             _handleDeleteUser(e) {
                 console.log("_handleDeleteUser");
-                if(confirm('Really delete this user?')){
-                    this.$.deleteUser.url= this.userUrl + this.selectedUser.user;
+                if (confirm('Really delete this user?')) {
+                    this.$.deleteUser.url = this.userUrl + this.selectedUser.user;
                     this.$.deleteUser.generateRequest();
                 }
             }
 
-            _handleUserDeleted(){
-                this.$.pages.select(0);
+            _handleUserDeleted() {
+                this._switchPage(0);
                 this.$.messenger.text = "User " + this.selectedUser.user + " has been deleted";
                 this.$.messenger.open();
             }
 
+            _handleUserDeleteError(){
+                this._handleRequestError(this.$.deleteUser.lastError);
+            }
 
-
-
-
-
-
+/*
             _isDeletable(userName) {
-                return this.mode='edit';
+                return this.mode = 'edit';
+            }
+*/
+
+            _userBack(e) {
+                this._switchPage(0);
+
+            }
+            _groupBack(e){
+                this._switchPage(1);
             }
 
-            _back(e){
-                this.$.pages.select(0);
-            }
-
+/*
             _usersChanged(val, foo) {
                 console.log("############# users changed");
                 console.log("val ", val, foo);
                 this.$.userList.render()
-
-//                if (this.users.length != 0) {
-//                    console.log("users changed", this.users)
-//                    //render must be called to update the UI when a new user has been added to the 'users' array
-//                    this.$.userList.render()
-//
-//                    /*
-//                     console.log("users changed this ", this);
-//                     console.log("users changed this ", this.users.length - 1);
-//                     console.log("######### users changed this ", this.$.userList.get(11));
-//                     */
-//                    var scope = this.$.userList.querySelectorAll('.user-entry')[11];
-//                    console.log("last child: ", scope);
-//                    var user = scope.querySelectorAll('.username')[0]
-//                    if (user.value == '') {
-//                        var detail = scope.querySelectorAll('.details')[0]
-//                        detail.hidden = false
-//                    }
-//                }
             }
 
             _groupsChanged() {
-                console.log("groups changed", this.users)
-                this.$.userList.render()
+                console.log("groups changed", this.groups)
+                this.$.groupList.render()
             }
+*/
 
-
-            _selectGroups() {
+            _selectUserGroups() {
                 this.$.memberOf.selectedValues = this.selectedUser.groups;
             }
 
-            editGroup(e) {
-                console.log("edit group ", e.model.get('item.group'));
-                var groupid = e.model.get('item.group')
+            _selectGroupMembers() {
+                console.log("_selectGroupMembers ", this.selectedGroup);
+                console.log("_selectGroupMembers ", this.selectedGroup.members);
+                var arr = [];
+                this.selectedGroup.members.forEach(function (item){
+                    arr.push(item.member);
+                });
+                console.log("new array ", arr);
+                this.$.groupMembers.selectedValues = arr;
             }
+
+
+            _editGroup(e){
+                console.log("edit group ", e.model.get('item.group'));
+                console.log("edit group selected group ", this.selectedGroup)
+
+
+                var groupid = e.model.get('item.group')
+
+                // get current item from templated DOM Element
+                var item = this.$.groupList.itemForElement(e.target);
+                console.log("selectedGroup: ", item)
+                this.selectedGroup = item;
+
+                this._selectGroupMembers();
+                this._switchPage(3);
+            }
+
 
             _handleGroups() {
                 this.groups = this.$.loadGroupList.lastResponse
             }
 
             _handleGroupListError(e) {
-                console.log("error loading groups: ", e)
-                //todo
+                this._handleRequestError(this.$.loadGroupList.lastError);
             }
 
             _addGroup(e) {
@@ -692,36 +831,86 @@
             }
 
 
-
             _handleAddGroup(e) {
+                console.log("add group: ", e)
+                console.log("dom repeat ", this.$.groupList);
+                e.stopPropagation();
+                e.preventDefault();
+
+                console.log("number of groups before: ", this.groups.length);
+
+                var foo = this.push('groups', {
+                    group: '',
+                    description: '',
+                    isManager: false
+                })
+                this.selectedGroup = this.groups[this.groups.length -1];
+
+                console.log('selected group: ', this.selectedGroup);
+                this._resetForm();
+                this._selectUserGroups();
+                this._switchPage(3);
+
+            }
+
+            _handleSaveGroup(){
+                console.log("_handleSaveGroup");
                 //todo
+                var valid = this.$.groupForm.validate();
+
+                if (valid) {
+                    console.log("saving selected values... ", this.$.groupMembers.selectedValues);
+
+                    var members = [];
+                    this.$.groupMembers.selectedValues.forEach(function(item){
+                        members.push({member:item, isManager:false});
+                    });
+
+                    console.log("members: ", members);
+                    this.selectedGroup.members = members;
+
+//                    this.selectedGroup.members = this.$.groupMembers.selectedValues;
+                    console.log("saving... ", this.selectedGroup)
+//
+                    this.$.saveGroup.body = JSON.stringify(this.selectedGroup);
+                    console.log('body ', this.$.saveGroup.body);
+//
+                    this.$.saveGroup.url = this.groupUrl + this.selectedGroup.group;
+                    this.$.saveGroup.generateRequest();
+                }
+
+
             }
 
-            _handleGroupItem(e) {
-                //todo: this does not work yet!
-//                console.log("_handleGroups ", e);
-//                console.log("_handleGroups ", e.model.get('users.user'));
-//                console.log("groups for user ", this.$.userList.itemForElement(e.target));
-//                var item = this.$.userList.itemForElement(e.model.dataHost.parentNode);
+            _handleSaveGroupError(){
+                this._handleRequestError(this.$.saveGroup.lastError);
+            }
 
-
-//                var item = this.$.userList.itemForElement(e.target);
-//                var idx = this.users.indexOf(item)
-//                console.log("group change idx: ", idx, e.target.label)
-//
-//                var entry = this.users[idx];
-//                console.log("entry: ", entry);
-//
-////                var idx = this.users.length -1
-//                this.splice('users.' + idx + '.groups', e.target.label)
-//                this.notifyPath('users.*')
-//                console.log("updated groups ", this.users)
-
-//                console.log('_handleGroup target ', e.target);
-                console.log('_handleGroup selectedUser ', this.selectedUser);
-//                console.log('current index ', this.$.userList.indexForElement(e.target))
+            _handleDeleteGroup(){
+                //todo
+                console.log("_handleDeleteGroupr");
+                if (confirm('Really delete this group?')) {
+                    this.$.deleteGroup.url = this.groupUrl + this.selectedGroup.group;
+                    this.$.deleteGroup.generateRequest();
+                }
 
             }
+
+            _handleGroupDeleted(){
+                //todo
+
+            }
+
+            _handleGroupDeletedError(){
+                this._handleRequestError(this.$.deleteGroup.lastError);
+            }
+
+            _closeToast(e){
+                this.$.errorReporter.close();
+            }
+
+
+
 
 
         }

@@ -40,9 +40,9 @@ import module namespace login-helper="http://exist-db.org/apps/dashboard/login-h
 
 import module namespace console="http://exist-db.org/xquery/console";
 
-declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
-declare option output:method "json";
-declare option output:media-type "application/json";
+(:declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";:)
+(:declare option output:method "json";:)
+(:declare option output:media-type "application/json";:)
 
 
 declare variable $local:HTTP_OK := xs:integer(200);
@@ -142,6 +142,10 @@ declare function local:update-user($user as xs:string, $request-body as xs:strin
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
+    console:log("update-group >"),
+    console:log($group),
+    console:log($request-body),
+    console:log("<update-group"),
     if(usermanager:update-group($group, jsjson:parse-json($request-body)))then
         (
             response:set-header("Location", local:get-group-location($group)),
@@ -255,22 +259,27 @@ else if (ends-with($exist:path, ".html")) then
                     <error>expected PUT for User from dojox.data.JsonRestStore and not POST</error>
                 )
             else if(request:get-method() eq "PUT") then
-                    let $log := console:log("hit user API PUT")
-                    let $body := util:binary-to-string(request:get-data()) return
-                        if(usermanager:user-exists($user))then
-                        (: update user:)
-                            local:update-user($user, $body)
-                        else
-                            local:create-user($user, $body)
-                else if(request:get-method() eq "GET") then (
-                        console:log("get users"),
-                        local:get-user($user)
+                let $log := console:log("hit user API PUT")
+                let $body := util:binary-to-string(request:get-data()) return
+                if(usermanager:user-exists($user))then
+                (: update user:)
+                    local:update-user($user, $body)
+                else
+                    if(string-length($user) != 0) then
+                        local:create-user($user, $body)
+                    else(
+                        response:set-status-code($local:HTTP_BAD_REQUEST),
+                        <error>user name is missing</error>
                     )
-                    else
-                        (
-                            response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                            <error>Unsupported method: {request:get-method()}</error>
-                        )
+            else if(request:get-method() eq "GET") then (
+                    console:log("get users"),
+                    local:get-user($user)
+                )
+            else
+                (
+                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                    <error>Unsupported method: {request:get-method()}</error>
+                )
 
 
         else if($exist:path eq "/api/group/")then
@@ -289,8 +298,9 @@ else if (ends-with($exist:path, ".html")) then
                             )
 
                         else if(request:get-method() eq "PUT") then
-                                let $log := console:log(util:binary-to-string(request:get-data()))
-                                let $body := util:binary-to-string(request:get-data()) return
+                                let $data := util:binary-to-string(request:get-data())
+                                let $log := console:log($data)
+                                let $body := $data return
                                     if(usermanager:group-exists($group))then
                                         local:update-group($group, $body)
                                     else
