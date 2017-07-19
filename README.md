@@ -45,11 +45,7 @@ Though not strictly required for development it is recommended that you have an 
 It is recommended to use ['nvm'](https://github.com/creationix/nvm) to install nodejs as this eases the process of installation and 
 allows to keep different versions of it on your system without conflicts.
 
-Nodejs is used within this project to drive the gulp tasks. These allow to:
- 
- * build CSS from less
- * sync your local files into eXistdb with `gulp deploy` or 
- * sync your changed files into eXistdb with `gulp watch`
+Nodejs is used within this project to drive the gulp tasks and handle client-side dependencies with bower.
  
 Please refer to the nvm page for installation instruction or use an installation method described
 on the nodejs.org homepage.
