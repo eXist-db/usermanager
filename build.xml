@@ -5,6 +5,7 @@
     <property name="project.version" value="${package(version)}"/>
     <property name="project.app" value="${package(abbrev)}"/>
     <property name="build.dir" value="build"/>
+    <property name="polymer.build.dir" value="${build.dir}/default"/>
     <target name="xar">
         <mkdir dir="${build.dir}"/>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}.xar" excludes="bower.json.bak build.xml ${build.dir}/**, node_modules/**, doc/**, gulpfile.js, package.json"/>
@@ -18,8 +19,7 @@
     cleans a the Polymer build directories
     -->
     <target name="clean-polymer-build">
-        <delete dir="${build.dir}/unbundled"/>
-        <delete dir="${build.dir}/bundled"/>
+        <delete dir="${polymer.build.dir}"/>
     </target>
 
     <!--
@@ -32,8 +32,7 @@
     <target name="polymer-build-production" depends="clean-polymer-build">
         <exec executable="polymer">
             <arg value="build"/>
-            <arg value="--shell"/>
-            <arg value="index.html"/>
+            <arg value="--bundle"/>
         </exec>
     </target>
 
@@ -44,15 +43,15 @@
     <target name="production-xar" depends="polymer-build-production">
         <mkdir dir="${build.dir}"/>
 
-        <copy file="controller.xql" todir="${build.dir}/bundled"/>
-        <copy file="expath-pkg.xml" todir="${build.dir}/bundled"/>
-        <copy file="configuration.xml" todir="${build.dir}/bundled"/>
-        <copy file="repo.xml" todir="${build.dir}/bundled"/>
-        <copy file="icon.png" todir="${build.dir}/bundled"/>
-        <copydir src="${basedir}/modules" dest="${build.dir}/bundled/modules" />
-        <copydir src="${basedir}/resources" dest="${build.dir}/bundled/resources" />
+        <copy file="controller.xql" todir="${polymer.build.dir}"/>
+        <copy file="expath-pkg.xml" todir="${polymer.build.dir}"/>
+        <!--<copy file="configuration.xml" todir="${build.dir}/bundled"/>-->
+        <copy file="repo.xml" todir="${polymer.build.dir}"/>
+        <copy file="icon.png" todir="${polymer.build.dir}"/>
+        <copydir src="${basedir}/modules" dest="${polymer.build.dir}/modules" />
+        <copydir src="${basedir}/resources" dest="${polymer.build.dir}/resources" />
 
-        <zip basedir="${build.dir}/bundled" destfile="${build.dir}/${project.app}-${project.version}-prod.xar" excludes="demo"/>
+        <zip basedir="${polymer.build.dir}" destfile="${build.dir}/${project.app}-${project.version}-prod.xar" excludes="demo"/>
     </target>
 
 </project>
