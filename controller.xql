@@ -219,8 +219,10 @@ declare function local:get-group($group as xs:string) as element() {
 };
 
 
+
 $login("org.exist.login", (), true()),
 (: HTTP request dispatch... :)
+
 
 if ($exist:path eq '') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
@@ -233,10 +235,9 @@ else if ($exist:path = "/") then
     </dispatch>
 
 else if (ends-with($exist:path, ".html")) then
-        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-            <cache-control cache="yes"/>
-        </dispatch>
-
+                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <cache-control cache="yes"/>
+                </dispatch>
 
     else if(starts-with($exist:path, "/api/"))then(
 

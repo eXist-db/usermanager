@@ -26,9 +26,6 @@
 <link rel="import" href="bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="bower_components/iron-form/iron-form.html">
 
-<link rel="import" href="existdb-user.html">
-
-
 <link rel="import" href="bower_components/app-layout/app-drawer/app-drawer.html">
 
 
@@ -295,9 +292,9 @@
                    method="get"
                    handle-as="json"
                    on-response="_handleUsers"
-                   url="/exist/apps/existdb-usermanager/api/user/"
+                   url="/exist/apps/usermanager/api/user/"
                    on-error="_handleUserListError"
-                   auto></iron-ajax>
+                   ></iron-ajax>
 
         <iron-ajax id="saveUser"
                    with-credentials
@@ -305,7 +302,7 @@
                    handle-as="json"
                    on-response="_handleUserSaved"
                    content-type="application/json"
-                   url="/exist/apps/existdb-usermanager/api/user/"
+                   url="/exist/apps/usermanager/api/user/"
                    on-error="_handleSaveUserError"></iron-ajax>
 
         <iron-ajax id="deleteUser"
@@ -314,14 +311,14 @@
                    handle-as="json"
                    on-response="_handleUserDeleted"
                    content-type="application/json"
-                   url="/exist/apps/existdb-usermanager/api/user/"
+                   url="/exist/apps/usermanager/api/user/"
                    on-error="_handleUserDeleteError"></iron-ajax>
 
         <iron-ajax id="loadGroupList"
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
-                   url="/exist/apps/existdb-usermanager/api/group/"
+                   url="/exist/apps/usermanager/api/group/"
                    on-error="_handleGroupListError"
                     auto></iron-ajax>
 
@@ -331,7 +328,7 @@
                    handle-as="json"
                    on-response="_handleGroupSaved"
                    content-type="application/json"
-                   url="/exist/apps/existdb-usermanager/api/group/"
+                   url="/exist/apps/usermanager/api/group/"
                    on-error="_handleSaveGroupError"></iron-ajax>
 
         <iron-ajax id="deleteGroup"
@@ -340,7 +337,7 @@
                    handle-as="json"
                    on-response="_handleGroupDeleted"
                    content-type="application/json"
-                   url="/exist/apps/existdb-usermanager/api/user/"
+                   url="/exist/apps/usermanager/api/user/"
                    on-error="_handleGroupDeletedError"></iron-ajax>
 
 
@@ -537,12 +534,12 @@
 
                     userUrl: {
                         type: String,
-                        value: "/exist/apps/existdb-usermanager/api/user/",
+                        value: "/exist/apps/usermanager/api/user/",
                         readonly: true
                     },
                     groupUrl: {
                         type: String,
-                        value: "/exist/apps/existdb-usermanager/api/group/",
+                        value: "/exist/apps/usermanager/api/group/",
                         readonly: true
                     },
                     mode: {
@@ -752,7 +749,7 @@
              * handler for deleting a user. Triggered by 'delete' button on user form.
              */
             _handleDeleteUser(e) {
-                console.log("_handleDeleteUser");
+                console.log("_handleDeleteUser ", this.selectedUser.user);
                 if (confirm('Really delete this user?')) {
                     this.$.deleteUser.url = this.userUrl + this.selectedUser.user;
                     this.$.deleteUser.generateRequest();
@@ -763,9 +760,10 @@
              * request handler called after user has been deleted.
              */
             _handleUserDeleted() {
-                this._switchPage(0);
+                console.log('_handleUserDeleted ', this.selectedUser.user);
                 this.$.messenger.text = "User " + this.selectedUser.user + " has been deleted";
                 this.$.messenger.open();
+                this._switchPage(0);
             }
 
             /**

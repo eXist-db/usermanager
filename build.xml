@@ -10,6 +10,9 @@
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}.xar" excludes="bower.json.bak build.xml ${build.dir}/**, node_modules/**, doc/**, gulpfile.js, package.json"/>
     </target>
 
+    <target name="clean-all">
+        <delete dir="${build.dir}"/>
+    </target>
 
     <!--
     cleans a the Polymer build directories
@@ -52,19 +55,4 @@
         <zip basedir="${build.dir}/bundled" destfile="${build.dir}/${project.app}-${project.version}-prod.xar" excludes="demo"/>
     </target>
 
-    <!--
-    This should be called once you have unpacked the template app to start your own application.
-    -->
-    <target name="init">
-        <input
-                message="Please enter new app name:"
-                addproperty="app.name"
-        />
-
-        <echo message="${app.name}"></echo>
-
-        <replace dir="${basedir}" includes="**/*.*"
-                 token="existdb-usermanager"
-                 value="${app.name}"/>
-    </target>
 </project>

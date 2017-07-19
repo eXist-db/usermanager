@@ -25,12 +25,12 @@ var exClient = exist.createClient({
 })
 
 var html5TargetConfiguration = {
-    target: '/db/apps/existdb-usermanager',
+    target: '/db/apps/usermanager',
     html5AsBinary: true
 }
 
 var targetConfiguration = {
-    target: '/db/apps/existdb-usermanager/',
+    target: '/db/apps/usermanager/',
     html5AsBinary: true
 }
 
