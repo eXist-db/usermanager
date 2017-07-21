@@ -398,7 +398,7 @@
                             <iron-form id="userForm" allow-redirect="false">
                                 <form action="" method="">
                                     <paper-input id="userInput" label="User Name*" value="{{selectedUser.user}}"
-                                                     class="username" pattern="[A-Za-z0-9_-]+"
+                                                     class="username" pattern="[A-Za-z0-9_-@.]+"
                                                      error-message="only the chars A-Z, a-z and numbers are allowed as username" auto-validate auto-focus></paper-input>
                                     <paper-input label="Full Name" value="{{selectedUser.fullName}}"></paper-input>
                                     <paper-input label="Description" value="{{selectedUser.description}}"></paper-input>
@@ -646,7 +646,7 @@
              * handles userlist loaded from server.
              */
             _handleUsers() {
-                console.log('_handleUsers', this.$.loadUserList.lastResponse)
+                console.log('_handleUsers', this.$.loadUserList.lastResponse);
                 this.users = this.$.loadUserList.lastResponse
             }
 
@@ -661,7 +661,7 @@
              * handler for 'add user' button (paper-fab)
              */
             _handleAddUser(e) {
-                console.log("add user: ", e)
+                console.log("add user: ", e);
                 console.log("dom repeat ", this.$.userList);
                 e.stopPropagation();
                 e.preventDefault();
@@ -674,7 +674,7 @@
                     disabled: false,
                     umask: '022',
                     groups: []
-                })
+                });
                 var userCnt = this.users.length;
 
                 console.log('selected user: ', this.selectedUser);
@@ -699,16 +699,16 @@
             _editUser(e) {
                 // get current item from templated DOM Element
                 var item = this.$.userList.itemForElement(e.target);
-                console.log("selectedUser: ", item)
+                console.log("selectedUser: ", item);
                 this.selectedUser = item;
 
-                console.log("selectedUser group: ", this.selectedUser.groups)
+                console.log("selectedUser group: ", this.selectedUser.groups);
 
                 if (this.selectedUser.groups == undefined) {
                     this.selectedUser.groups = [];
                 }
 
-                this._selectUserGroups(e.target)
+                this._selectUserGroups(e.target);
                 this._switchPage(2);
             }
 
@@ -719,7 +719,7 @@
                 var valid = this.$.userForm.validate();
 
                 if (valid) {
-                    console.log("saving... ", this.selectedUser)
+                    console.log("saving... ", this.selectedUser);
                     this.$.saveUser.body = JSON.stringify(this.selectedUser);
                     console.log('body ', this.$.saveUser.body);
 
@@ -821,14 +821,14 @@
 
             _editGroup(e){
                 console.log("edit group ", e.model.get('item.group'));
-                console.log("edit group selected group ", this.selectedGroup)
+                console.log("edit group selected group ", this.selectedGroup);
 
 
-                var groupid = e.model.get('item.group')
+                var groupid = e.model.get('item.group');
 
                 // get current item from templated DOM Element
                 var item = this.$.groupList.itemForElement(e.target);
-                console.log("selectedGroup: ", item)
+                console.log("selectedGroup: ", item);
                 this.selectedGroup = item;
 
                 this._selectGroupMembers();
@@ -848,7 +848,7 @@
              * handler called by 'save' button
              */
             _handleAddGroup(e) {
-                console.log("add group: ", e)
+                console.log("add group: ", e);
                 console.log("dom repeat ", this.$.groupList);
                 e.stopPropagation();
                 e.preventDefault();
@@ -859,7 +859,7 @@
                     group: '',
                     description: '',
                     isManager: false
-                })
+                });
                 this.selectedGroup = this.groups[this.groups.length -1];
 
                 console.log('selected group: ', this.selectedGroup);
@@ -886,7 +886,7 @@
                     console.log("members: ", members);
                     this.selectedGroup.members = members;
 
-                    console.log("saving... ", this.selectedGroup)
+                    console.log("saving... ", this.selectedGroup);
                     this.$.saveGroup.body = JSON.stringify(this.selectedGroup);
 
                     this.$.saveGroup.url = this.groupUrl + this.selectedGroup.group;
