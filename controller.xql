@@ -36,7 +36,7 @@ import module namespace request = "http://exist-db.org/xquery/request";
 import module namespace util = "http://exist-db.org/xquery/util";
 import module namespace usermanager = "http://exist-db.org/apps/userManager" at "modules/userManager.xqm";
 import module namespace jsjson = "http://johnsnelson/json" at "modules/jsjson.xqm";
-import module namespace login-helper="http://exist-db.org/apps/dashboard/login-helper" at "modules/login-helper.xql";
+import module namespace login="http://exist-db.org/xquery/login" at "resource:org/exist/xquery/modules/persistentlogin/login.xql";
 
 import module namespace console="http://exist-db.org/xquery/console";
 
@@ -58,9 +58,13 @@ declare variable $exist:controller external;
 declare variable $exist:path external;
 declare variable $exist:prefix external;
 
+
+(:declare variable $exist:user external;:)
+
+
+
 declare variable $local:HTTP_API_BASE := replace(string-join((request:get-context-path(), $exist:prefix, $exist:controller, "api"), "/"), "//", "/");
 
-declare variable $login := login-helper:get-login-method();
 
 declare function local:get-user-location($user) as xs:string {
     local:get-location(("user", $user))
@@ -95,10 +99,23 @@ declare function local:list-users($user as xs:string?) {
 };
 
 declare function local:list-groups($group as xs:string?) as element(json:value) {
-    if($group)then
-        usermanager:list-groups($group)
-    else
-        usermanager:list-groups()
+    try{
+        if($group)then
+            usermanager:list-groups($group)
+        else
+            usermanager:list-groups()
+    } catch * {
+        if(contains($err:description, "You must be an authenticated user")) then
+            (
+                response:set-status-code($local:HTTP_FORBIDDEN),
+                <error>Access denied</error>
+            )
+        else
+            (
+                response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
+                <error>{$err:description}</error>
+            )
+    }
 };
 
 declare function local:delete-user($user as xs:string) as element(deleted) {
@@ -122,23 +139,23 @@ declare function local:delete-group($group as xs:string) as element(deleted) {
 declare function local:update-user($user as xs:string, $request-body as xs:string) as element() {
     let $log := console:log("update-user " || $user)
     let $log := console:log($request-body)
-        return
-    if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
-        (
-            response:set-header("Location", local:get-user-location($user)),
-            response:set-status-code($local:HTTP_OK),
+    return
+        if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
+            (
+                response:set-header("Location", local:get-user-location($user)),
+                response:set-status-code($local:HTTP_OK),
 
-            (: TODO ideally would like to set 204 above and not return and content in the body
+                (: TODO ideally would like to set 204 above and not return and content in the body
         however the controller.xql is not capable of doing that, as there is no dispatch/ignore
         that just returns processing with an empty body.
         :)
 
-            (: send back updated group json :)
-            usermanager:get-user($user)
-        ) else (
-        response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
-        <error>could not update group</error>
-    )
+                (: send back updated group json :)
+                usermanager:get-user($user)
+            ) else (
+            response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
+            <error>could not update group</error>
+        )
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
@@ -219,107 +236,114 @@ declare function local:get-group($group as xs:string) as element() {
 };
 
 
-
-$login("org.exist.login", (), true()),
-(: HTTP request dispatch... :)
-
-
 if ($exist:path eq '') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{request:get-uri()}/"/>
     </dispatch>
 else if ($exist:path = "/") then
+
 (: forward root path to index.html :)
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="index.html"/>
     </dispatch>
 
-else if (ends-with($exist:path, ".html")) then
+else if (ends-with($exist:path, ".html")) then (
+        login:set-user("org.exist.login", (), false()),
+        let $user := request:get-attribute("org.exist.login.user")
+        return
+            if ($user and sm:is-dba($user)) then
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <cache-control cache="yes"/>
                 </dispatch>
-
-    else if(starts-with($exist:path, "/api/"))then(
-
-        (: API is in JSON :)
-        util:declare-option("exist:serialize", "method=json media-type=application/json"),
-
-        if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
-            (
-                console:log("get users"),
-                local:list-users(request:get-parameter("user", ()))
-            )
-        else if(starts-with($exist:path, "/api/user/"))then
-            let $log := console:log("hit user API")
-            let $user := replace($exist:path, "/api/user/", "") return
-            if(request:get-method() eq "DELETE")then
-                local:delete-user($user)
-            else if(request:get-method() eq "POST")then
-                (
-                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                    <error>expected PUT for User from dojox.data.JsonRestStore and not POST</error>
-                )
-            else if(request:get-method() eq "PUT") then
-                let $log := console:log("hit user API PUT")
-                let $body := util:binary-to-string(request:get-data()) return
-                if(usermanager:user-exists($user))then
-                (: update user:)
-                    local:update-user($user, $body)
-                else
-                    if(string-length($user) != 0) then
-                        local:create-user($user, $body)
-                    else(
-                        response:set-status-code($local:HTTP_BAD_REQUEST),
-                        <error>user name is missing</error>
-                    )
-            else if(request:get-method() eq "GET") then (
-                    console:log("get users"),
-                    local:get-user($user)
-                )
             else
+                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <forward url="login.html"/>
+                </dispatch>
+    )
+    else if(starts-with($exist:path, "/api/"))then(
+            login:set-user("org.exist.login", (), false()),
+            (: API is in JSON :)
+            util:declare-option("exist:serialize", "method=json media-type=application/json"),
+
+            if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
                 (
-                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                    <error>Unsupported method: {request:get-method()}</error>
+                    console:log("get users"),
+                    local:list-users(request:get-parameter("user", ()))
                 )
-
-
-        else if($exist:path eq "/api/group/")then
-                local:list-groups(request:get-parameter("group", ()))
-
-            else if(starts-with($exist:path, "/api/group/"))then
-                    let $group := replace($exist:path, "/api/group/", "") return
-
-                        if(request:get-method() eq "DELETE")then
-                            local:delete-group($group)
-
-                        else if(request:get-method() eq "POST")then
-                            (
-                                response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                                <error>expected PUT for Group from dojox.data.JsonRestStore and not POST</error>
-                            )
-
-                        else if(request:get-method() eq "PUT") then
-                                let $data := util:binary-to-string(request:get-data())
-                                let $log := console:log($data)
-                                let $body := $data return
-                                    if(usermanager:group-exists($group))then
-                                        local:update-group($group, $body)
-                                    else
-                                        local:create-group($group, $body)
-                            else if(request:get-method() eq "GET") then
-                                    local:get-group($group)
-
+            else if(starts-with($exist:path, "/api/user/"))then
+                let $log := console:log("hit user API")
+                let $user := replace($exist:path, "/api/user/", "") return
+                    if(request:get-method() eq "DELETE")then
+                        local:delete-user($user)
+                    else if(request:get-method() eq "POST")then
+                        (
+                            response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                            <error>expected PUT for User and not POST</error>
+                        )
+                    else if(request:get-method() eq "PUT") then
+                            let $log := console:log("hit user API PUT")
+                            let $body := util:binary-to-string(request:get-data()) return
+                                if(usermanager:user-exists($user))then
+                                (: update user:)
+                                    local:update-user($user, $body)
                                 else
-                                    (
-                                        response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
-                                        <error>Unsupported method: {request:get-method()}</error>
+                                    if(string-length($user) != 0) then
+                                        local:create-user($user, $body)
+                                    else(
+                                        response:set-status-code($local:HTTP_BAD_REQUEST),
+                                        <error>user name is missing</error>
                                     )
+                        else if(request:get-method() eq "GET") then (
+                                console:log("get users"),
+                                local:get-user($user)
+                            )
+                            else
+                                (
+                                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                                    <error>Unsupported method: {request:get-method()}</error>
+                                )
 
-                else
-                (: unkown URI path, not part of the API :)
-                    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                        <cache-control cache="yes"/>
-                    </dispatch>
+
+            else if($exist:path eq "/api/group/")then (
+                    login:set-user("org.exist.login", (), false()),
+                    local:list-groups(request:get-parameter("group", ()))
+                )
+                else if(starts-with($exist:path, "/api/group/"))then (
+                        login:set-user("org.exist.login", (), false()),
+                        let $group := replace($exist:path, "/api/group/", "") return
+
+                            if(request:get-method() eq "DELETE")then
+                                local:delete-group($group)
+
+                            else if(request:get-method() eq "POST")then
+                                (
+                                    response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                                    <error>expected PUT for Group from dojox.data.JsonRestStore and not POST</error>
+                                )
+
+                            else if(request:get-method() eq "PUT") then
+                                    let $data := util:binary-to-string(request:get-data())
+                                    let $log := console:log($data)
+                                    let $body := $data return
+                                        if(usermanager:group-exists($group))then
+                                            local:update-group($group, $body)
+                                        else
+                                            local:create-group($group, $body)
+                                else if(request:get-method() eq "GET") then
+                                        local:get-group($group)
+
+                                    else
+                                        (
+                                            response:set-status-code($local:HTTP_METHOD_NOT_ALLOWED),
+                                            <error>Unsupported method: {request:get-method()}</error>
+
+                                        )
+                    )
+                    else
+                    (: unkown URI path, not part of the API :)
+                        <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                            <cache-control cache="yes"/>
+                        </dispatch>
         ) else
         (: not an API URI path :)
             <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
