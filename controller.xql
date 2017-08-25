@@ -241,13 +241,11 @@ if ($exist:path eq '') then
         <redirect url="{request:get-uri()}/"/>
     </dispatch>
 else if ($exist:path = "/") then
-
-(: forward root path to index.html :)
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="index.html"/>
     </dispatch>
 
-else if (ends-with($exist:path, ".html")) then (
+else if (ends-with($exist:path, "index.html")) then (
         login:set-user("org.exist.login", (), false()),
         let $user := request:get-attribute("org.exist.login.user")
         return

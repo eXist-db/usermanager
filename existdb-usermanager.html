@@ -18,6 +18,11 @@
 <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
+
+<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+
+
+
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-fab/paper-fab.html">
@@ -142,8 +147,20 @@
                 position: relative;
             }
 
+            .list-heading{
+                display: block;
+                width: 100%;
+            }
+
             .member-heading {
-                margin-top: 20px;
+                margin-top: 40px;
+                display: inline-block;
+            }
+            .isManager{
+                margin-top: 40px;
+                position:absolute;
+                right:80px;
+                display: inline-block;
             }
 
             .group-member {
@@ -282,8 +299,22 @@
             paper-button.save.disabled{
                 color:var(--paper-grey-300);
             }
-            .manager{
+            paper-toggle-button.manager{
                 float:right;
+            }
+            .member-user{
+                flex-grow:3;
+            }
+
+            .checkWrapper{
+                position:relative;
+                float:right;
+                margin-top:-23px;
+            }
+            paper-checkbox{
+                position:absolute;
+                right:10px;
+                z-index:10;
             }
         </style>
 
@@ -398,7 +429,7 @@
                             <iron-form id="userForm" allow-redirect="false">
                                 <form action="" method="">
                                     <paper-input id="userInput" label="User Name*" value="{{selectedUser.user}}"
-                                                     class="username" pattern="[A-Za-z0-9_-@.]+"
+                                                     class="username" pattern="[@.A-Za-z0-9_-]+"
                                                      error-message="only the chars A-Z, a-z and numbers are allowed as username" auto-validate auto-focus></paper-input>
                                     <paper-input label="Full Name" value="{{selectedUser.fullName}}"></paper-input>
                                     <paper-input label="Description" value="{{selectedUser.description}}"></paper-input>
@@ -446,13 +477,24 @@
                                                  error-message="only the chars A-Z, a-z and numbers are allowed as group name" auto-validate auto-focus></paper-input>
                                     <paper-input label="Description"
                                                  value="{{selectedGroup.description}}"></paper-input>
-                                    <div class="member-heading">Members of this group</div>
-                                    <paper-listbox id="groupMembers" multi attr-for-selected="label">
-                                        <template is="dom-repeat" items="[[users]]" as="member">
-                                            <paper-item label="[[member.user]]">
-                                                <span>[[member.user]]</span>
-                                                <!--<paper-toggle-button class="manager" checked$="{{member.isManager}}"></paper-toggle-button>-->
+
+                                    <div class="list-heading">
+                                        <span class="member-heading">Members of this group</span>
+                                        <span class="isManager">is Manager</span>
+                                    </div>
+
+                                    <paper-listbox id="groupMembers" multi attr-for-selected="label" selectable="paper-item">
+                                        <template is="dom-repeat" items="[[users]]">
+                                            <paper-item label="[[item.user]]">
+                                                <!--<paper-item-body>-->
+                                                    <span class="member-user">[[item.user]]</span>
+                                                    <!--<paper-checkbox checked="[[item.isManager]]"></paper-checkbox>-->
+
+                                                <!--</paper-item-body>-->
                                             </paper-item>
+                                            <div class="checkWrapper">
+                                                <paper-checkbox checked="[[item.isManager]]" on-click="_toggleManager"></paper-checkbox>
+                                            </div>
                                         </template>
                                     </paper-listbox>
                                     <paper-button class="save" on-tap="_handleSaveGroup">save</paper-button>
@@ -546,6 +588,10 @@
                         type: String,
                         value: 'edit'
                     },
+                    user:{
+                        type: String,
+                        reflectToAttribute:true
+                    }
                 };
             }
 
@@ -560,6 +606,8 @@
 
             connectedCallback() {
                 super.connectedCallback();
+//                this.$.groupMembers.addEventListener('iron-activate', e => this._handleSelection(e));
+//                this.$.groupMembers.addEventListener('iron-deselect', e => this._handleSelection(e));
             }
 
             ready() {
@@ -570,6 +618,30 @@
             // ########################## private part ##########################
             // ########################## private part ##########################
             // ########################## private part ##########################
+
+            _handleSelection(e){
+                console.log('_handleSelection: ', e.composedPath());
+
+                var pathes = e.composedPath();
+                var toggle;
+                pathes.forEach(function (item){
+                    console.log("path: ", item);
+                    if(item.nodeName.toLowerCase() == 'paper-toggle-button'){
+                        toggle=item;
+                    }
+                });
+                console.log('toggle?: ', toggle);
+
+                if(toggle != undefined){
+                    e.stopPropagation();
+                    e.preventDefault();
+//                    return false;
+
+                }
+
+
+
+            }
 
 
 /*
@@ -911,6 +983,46 @@
                 this._handleRequestError(this.$.saveGroup.lastError);
             }
 
+            _toggleManager(e, user){
+                console.log('_toggleManager',e);
+                console.log('_toggleManager modeo',e.model.item);
+                console.log('_toggleManager composedPath',e.composedPath());
+
+
+                var pathes = e.composedPath();
+                var toggle;
+                pathes.forEach(function (item){
+//                    console.log("path: ", item);
+                    if(item.nodeType == 1 && item.nodeName.toLowerCase() == 'paper-checkbox'){
+                        toggle=item;
+                    }
+                });
+
+
+
+
+                console.log('_toggleManager toggle ', toggle);
+//                console.log('_toggleManager toggle checked', toggle.hasAttribute('checked'));
+
+                console.log("current group ", this.selectedGroup);
+
+/*
+                if(toggle.pressed){
+                    toggle.checked = false;
+                } else {
+                    toggle.checked = true;
+                }
+*/
+
+
+
+
+//                e.target.checked = !e.target.checked;
+                e.stopPropagation();
+//                e.preventDefault();
+//                return false;
+            }
+
             /**
              * handler calling server for group deletion.
              */
@@ -961,6 +1073,10 @@
                     this.$.errorReporter.text = 'Server responded: ' + error.status + ' - ' + error.statusText;
                 }
                 this.$.errorReporter.open();
+            }
+
+            usersChange() {
+                console.log("############## users changed");
             }
 
 

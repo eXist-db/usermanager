@@ -10,4 +10,5 @@
     <target>usermanager</target>
     <prepare></prepare>
     <finish/>
+    <login-page url=""/>
 </meta>
