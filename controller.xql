@@ -248,22 +248,49 @@ else if ($exist:path = "/") then
 else if (ends-with($exist:path, "index.html")) then (
         login:set-user("org.exist.login", (), false()),
         let $user := request:get-attribute("org.exist.login.user")
+        let $userParam := request:get-parameter("user","")
+        let $signout := request:get-parameter("logout",())
+
         return
-            if ($user and sm:is-dba($user)) then
+            if ($signout = "true") then(
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                    <cache-control cache="yes"/>
+                    <redirect url="login.html"/>
                 </dispatch>
+            )
+            else if ($user and sm:is-dba($user)) then
+                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <cache-control cache="no"/>
+                </dispatch>
+            else if(not(string($userParam) eq string($user))) then
+                (:
+                if a user was send as request param 'user'
+                AND it is NOT the same as the $user
+                a former login attempt has failed.
+
+                Here a duplicate of the login.html is used. This is certainly not the most elegant solution. Just here
+                to not complicate things further with templating etc.
+                :)
+                    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                        <forward url="fail.html"/>
+                    </dispatch>
             else
+
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <forward url="login.html"/>
                 </dispatch>
     )
     else if(starts-with($exist:path, "/api/"))then(
-            login:set-user("org.exist.login", (), false()),
-            (: API is in JSON :)
             util:declare-option("exist:serialize", "method=json media-type=application/json"),
+            login:set-user("org.exist.login", (), false()),
+            let $user := request:get-attribute("org.exist.login.user")
+            return
 
-            if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
+                (: API is in JSON :)
+            if(not(exists($user)) or not(sm:is-dba($user))) then
+                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <redirect url="../../login.html"/>
+                </dispatch>
+            else if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
                 (
                     console:log("get users"),
                     local:list-users(request:get-parameter("user", ()))

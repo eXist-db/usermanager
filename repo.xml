@@ -2,13 +2,12 @@
 <meta xmlns="http://exist-db.org/xquery/repo">
     <description>UserManager</description>
     <author>Joern Turner</author>
-    <website/>
-    <status>alpha</status>
+    <website>https://github.com/eXist-db/usermanager</website>
+    <status>beta</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
     <type>application</type>
     <target>usermanager</target>
     <prepare></prepare>
     <finish/>
-    <login-page url=""/>
 </meta>

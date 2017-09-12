@@ -1,18 +1,24 @@
 # eXistdb User Manager app
 
-Rewrite of original user manager used to be deployed as plugin of the 
-eXistdb dashboard.
-
-This new version is based upon Web Components specifically on Polymer 2.0 for cross-browser compat.
+Rewrite of original eXistdb user manager that came as a plugin of dashboard.
 
 UserManager 2 comes as a standalone application and is not dependent on dashboard any more.
 
-This is still an early release. There are certainly some detail issues. Help, comments and proposals welcome. 
+User Manager is accessible for users of the 'dba' group exclusively.
 
-## Setup 
+## Installation
+
+Use the eXistdb Package Manager to install the app from public repo. This will always the latest and greatest.
+
+
+## Development Setup 
+
+***Note: this section is only relevant if you like to build User Manager yourself to apply your own modifications.***
 
 This app requires NodeJS and [Polymer CLI](https://www.polymer-project.org/2.0/start/toolbox/set-up) for creating
-optimized builds of the application. For development purposes you can simply call ```ant``` to create a xar.
+optimized production builds of the application. 
+
+For development purposes you can simply call ```ant``` to create a xar.
 
 1. make sure you have NodeJS installed. See 'notes on setting up nodejs' below for help.
 1. execute ```npm install``` to load dependencies
@@ -20,7 +26,7 @@ optimized builds of the application. For development purposes you can simply cal
  execute ```npm install -g polymer-cli```
 1. execute ```bower install```
 
-## tooling
+## Tooling
 
 If you have installed NodeJS you can make use of following gulp commands:
 
@@ -30,7 +36,7 @@ If you have installed NodeJS you can make use of following gulp commands:
 Note: you must have installed the xar application once in the database before running these commands. gulp will not
 create the app in the db itself but just update it if it's there.
 
-## building
+## Building
 
 To create an optimized build execute:
 

@@ -33,6 +33,8 @@
         <exec executable="polymer">
             <arg value="build"/>
             <arg value="--bundle"/>
+            <arg value="--sources"/>
+            <arg value="*.html"/>
         </exec>
     </target>
 
