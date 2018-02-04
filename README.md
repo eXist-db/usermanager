@@ -1,6 +1,6 @@
-# eXistdb User Manager app
+# eXist-db User Manager app
 
-Rewrite of original eXistdb user manager that came as a plugin of dashboard.
+Rewrite of original eXist-db user manager that came as a plugin of dashboard.
 
 UserManager 2 comes as a standalone application and is not dependent on dashboard any more.
 
@@ -8,7 +8,7 @@ User Manager is accessible for users of the 'dba' group exclusively.
 
 ## Installation
 
-Use the eXistdb Package Manager to install the app from public repo. This will always the latest and greatest.
+Use the eXist-db Package Manager to install the app from public repo. This will always the latest and greatest.
 
 
 ## Development Setup 
