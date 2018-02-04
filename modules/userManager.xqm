@@ -200,7 +200,7 @@ declare function usermanager:group-exists($group) as xs:boolean {
     secman:list-groups() = $group
 };
 
-declare function usermanager:delete-group($group) as empty() {
+declare function usermanager:delete-group($group) as empty-sequence() {
     secman:delete-group($group)
 };
 
