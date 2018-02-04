@@ -66,7 +66,7 @@ declare function usermanager:list-users($pattern as xs:string) as element(json:v
     </json:value>
 };
 
-declare function usermanager:delete-user($user) as empty() {
+declare function usermanager:delete-user($user) as empty-sequence() {
     
     (: TODO implement secman module functions instead :)
     xmldb:delete-user($user)
