@@ -29,13 +29,14 @@ html, body{
 }
 .wrapper{
     position: relative;
-    top: 40%;
-    transform:  perspective(1px) translateY(-80%);
+    /*top: 40%;*/
+    /*transform:  perspective(1px) translateY(-80%);*/
     display:table;
     margin:0 auto;
 }
 existdb-login{
     background: white;
     border-radius: 4px;
+    height: 200px;
 
 }
