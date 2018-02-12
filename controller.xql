@@ -246,7 +246,7 @@ else if ($exist:path = "/") then
     </dispatch>
 
 else if (ends-with($exist:path, "index.html")) then (
-        login:set-user("org.exist.login", (), false()),
+        login:set-user("org.exist.login", (), true()),
         let $user := request:get-attribute("org.exist.login.user")
         let $userParam := request:get-parameter("user","")
         let $signout := request:get-parameter("logout",())
@@ -261,22 +261,10 @@ else if (ends-with($exist:path, "index.html")) then (
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <cache-control cache="no"/>
                 </dispatch>
-            else if(not(string($userParam) eq string($user))) then
-                (:
-                if a user was send as request param 'user'
-                AND it is NOT the same as the $user
-                a former login attempt has failed.
-
-                Here a duplicate of the login.html is used. This is certainly not the most elegant solution. Just here
-                to not complicate things further with templating etc.
-                :)
-                    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                        <forward url="fail.html"/>
-                    </dispatch>
-            else
-
+           else
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <forward url="login.html"/>
+                    <cache-control cache="no"/>
                 </dispatch>
     )
     else if(starts-with($exist:path, "/api/"))then(
@@ -288,7 +276,7 @@ else if (ends-with($exist:path, "index.html")) then (
                 (: API is in JSON :)
             if(not(exists($user)) or not(sm:is-dba($user))) then
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                    <redirect url="../../login.html"/>
+                    <redirect url="login.html"/>
                 </dispatch>
             else if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
                 (

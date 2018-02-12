@@ -44,8 +44,11 @@
             <arg value="--bundle"/>
             <arg value="--sources"/>
             <arg value="*.html"/>
+            <arg value="--entrypoint"/>
+            <arg value="index.html"/>
         </exec>
     </target>
+
 
 
     <!--
@@ -61,6 +64,7 @@
         <copy file="icon.png" todir="${polymer.build.dir}"/>
         <copydir src="${basedir}/modules" dest="${polymer.build.dir}/modules" />
         <copydir src="${basedir}/resources" dest="${polymer.build.dir}/resources" />
+
 
         <zip basedir="${polymer.build.dir}" destfile="${build.dir}/${project.app}-${project.version}-prod.xar" excludes="demo"/>
     </target>

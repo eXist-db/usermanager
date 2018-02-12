@@ -25,8 +25,7 @@
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
     "iron-form": "PolymerElements/iron-form#^2.0.0",
-    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.0",
-    "existdb-login": "https://github.com/eXist-db/existdb-login.git"
+    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
