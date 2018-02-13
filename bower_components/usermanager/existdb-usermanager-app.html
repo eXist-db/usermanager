@@ -15,9 +15,6 @@
 
 
 <link rel="import" href="bower_components/usermanager/existdb-usermanager.html">
-<link rel="import" href="bower_components/existdb-login/existdb-login.html">
-
-
 
 
 <dom-module id="existdb-usermanager-app">
@@ -51,17 +48,23 @@
             a{
                 color:white;
                 font-size:18px;
+                font-weight:300;
+                margin-right:20px;
             }
 
+/*
+            existdb-usermanager paper-tabs{
+                position:absolute;
+            }
+*/
         </style>
 
-        <app-header-layout>
+        <app-header-layout fullbleed has-scrolling-region>
             <app-header slot="header" fixed>
                 <app-toolbar>
                     <div main-title>User Manager</div>
                     <a href="index.html?logout=true">logout</a>
                 </app-toolbar>
-
             </app-header>
 
             <existdb-usermanager></existdb-usermanager>

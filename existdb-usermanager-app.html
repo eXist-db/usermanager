@@ -52,15 +52,19 @@
                 margin-right:20px;
             }
 
+/*
+            existdb-usermanager paper-tabs{
+                position:absolute;
+            }
+*/
         </style>
 
-        <app-header-layout>
+        <app-header-layout fullbleed has-scrolling-region>
             <app-header slot="header" fixed>
                 <app-toolbar>
                     <div main-title>User Manager</div>
                     <a href="index.html?logout=true">logout</a>
                 </app-toolbar>
-
             </app-header>
 
             <existdb-usermanager></existdb-usermanager>

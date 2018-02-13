@@ -43,7 +43,7 @@
     <template>
         <style>
             :host {
-                --paper-tabs-selection-bar-color: var(--paper-pink-500);
+                --paper-tabs-selection-bar-color: var(--paper-blue-500);
                 @apply(--paper-font-common-base);
                 display: block;
                 padding: 0;
@@ -57,20 +57,19 @@
                 --paper-tabs-selection-bar:{
                     border-width: 5px;
                 };
-                /*max-width: 600;*/
-            }
 
-            app-header {
-                background: rgb(0, 136, 204);
-                padding: 0px;
-                color: white;
+                --paper-tabs:{
+                    color:var(--paper-blue-700);
+                };
+
+                position: relative;
+                /*max-width: 600;*/
             }
 
             paper-tab{
                 font-size:24px;
                 font-weight: 400;
             }
-
 
             paper-fab {
                 position: fixed;
@@ -98,15 +97,16 @@
             }
 
             ul {
-                padding: 0 40px;
+                padding: 0 6px;
                 list-style: none;
             }
 
             li {
                 padding: 10px;
-                background: var(--paper-grey-50);
+                background: white;
                 margin: 10px 0;
                 position: relative;
+                border:1px solid var(--paper-grey-200);
             }
 
             .user, .group {
@@ -129,7 +129,7 @@
 
             .details {
                 padding: 40px;
-                margin: 0px 40px 20px 0;
+                /*margin: 0px 40px 20px 0;*/
                 background: white;
             }
 
@@ -315,6 +315,24 @@
                 z-index:10;
                 top:-23px;
             }
+
+            app-header{
+                height: 60px;
+            }
+            paper-tabs{
+                height: 60px;
+                position: fixed;
+                top:0;
+                left:0;
+                z-index:10;
+                width:100%;
+                background: var(--paper-blue-100);
+            }
+            iron-pages{
+                /*margin-top:70px;*/
+                overflow: auto;
+                background: var(--paper-grey-100);
+            }
         </style>
 
         <iron-ajax id="loadUserList"
@@ -374,50 +392,72 @@
         <array-selector id="userselector" items="{{users}}" selected="{{selectedUser}}" multi toggle></array-selector>
         <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi toggle></array-selector>
 
-        <app-header-layout>
+        <!--<app-header-layout>-->
+<!--
             <app-header slot="header" fixed>
                 <h1>User Manager</h1>
-                <!--<paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>-->
-                <paper-tabs selected="{{selected}}">
-                    <paper-tab>Users</paper-tab>
-                    <paper-tab>Groups</paper-tab>
-                </paper-tabs>
-
             </app-header>
-            <div id="wrapper">
+-->
+
+            <!--<app-header slot="header" sticky>-->
+                <!--<app-toolbar>-->
+                <!--</app-toolbar>-->
+            <!--</app-header>-->
+            <!--<div id="wrapper">-->
 
 
                 <iron-pages id="pages" selected="{{selected}}">
-                    <ul id="userListPage">
-                        <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
+                    <div>
+                        <app-header-layout has-scrolling-region>
+                            <app-header slot="header" sticky fixed>
+                                <paper-tabs selected="{{selected}}">
+                                    <paper-tab>Users</paper-tab>
+                                    <paper-tab>Groups</paper-tab>
+                                </paper-tabs>
+                            </app-header>
+                            <ul id="userListPage">
+                                <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
 
-                        <template id="userList" is="dom-repeat" items="{{users}}" as="item">
+                                <template id="userList" is="dom-repeat" items="{{users}}" as="item">
 
-                            <li class="user-entry" on-tap="_editUser">
-                                <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
-                                <span class="user" title="User Name">{{item.user}}</span>
-                                <span class="fullname">{{item.fullName}}</span>
-                                <span class="description">{{item.description}}</span>
-                                <!--<paper-icon-button id="moredetail" class="more" icon="arrow-forward" ></paper-icon-button>-->
-                            </li>
-                        </template>
-                    </ul>
+                                    <li class="user-entry" on-tap="_editUser">
+                                        <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
+                                        <span class="user" title="User Name">{{item.user}}</span>
+                                        <span class="fullname">{{item.fullName}}</span>
+                                        <span class="description">{{item.description}}</span>
+                                        <!--<paper-icon-button id="moredetail" class="more" icon="arrow-forward" ></paper-icon-button>-->
+                                    </li>
+                                </template>
+                            </ul>
+                        </app-header-layout>
+                    </div>
+                    <div>
+                        <app-header-layout has-scrolling-region>
+                            <app-header slot="header" sticky fixed>
+                                <paper-tabs selected="{{selected}}">
+                                    <paper-tab>Users</paper-tab>
+                                    <paper-tab>Groups</paper-tab>
+                                </paper-tabs>
+                            </app-header>
 
-                    <ul id="groupListPage">
-                        <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
+                            <ul id="groupListPage">
+                                <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
 
-                        <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
-                            <li class="group-entry" on-tap="_editGroup">
-                                <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
-                                <span class="group" title="Group">{{item.group}}</span>
-                                <span class="description">{{item.description}}</span>
-<!--
-                                <paper-icon-button class="more" icon="expand-more"
-                                                   on-tap="editGroup"></paper-icon-button>
--->
-                            </li>
-                        </template>
-                    </ul>
+                                <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
+                                    <li class="group-entry" on-tap="_editGroup">
+                                        <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
+                                        <span class="group" title="Group">{{item.group}}</span>
+                                        <span class="description">{{item.description}}</span>
+                                        <!--
+                                                                        <paper-icon-button class="more" icon="expand-more"
+                                                                                           on-tap="editGroup"></paper-icon-button>
+                                        -->
+                                    </li>
+                                </template>
+                            </ul>
+                        </app-header-layout>
+
+                    </div>
 
                     <div id="userPage" class="editUser">
                         <paper-icon-button class="back" icon="close" on-click="_userBack"
@@ -503,10 +543,10 @@
                         </div>
                     </div>
                 </iron-pages>
-            </div>
+            <!--</div>-->
 
 
-        </app-header-layout>
+        <!--</app-header-layout>-->
         <paper-toast id="messenger" class="messenger" text=""></paper-toast>
         <paper-toast id="errorReporter" class="errorReporter" text="" duration="0">
             <a href="#" on-tap="_closeToast">close</a>

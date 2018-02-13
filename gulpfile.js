@@ -73,8 +73,8 @@ gulp.task('odd:watch', function () {
 // files in project root //
 
 var componentPaths = [
-    '*.html'
-//  '!components/bower_components/**/*'
+    '*.html',
+    'bower_components/**/*'
 ];
 
 gulp.task('deploy:components', function () {
@@ -90,9 +90,7 @@ var otherPaths = [
     'transforms/**/*',
     'resources/**/*',
     '!resources/css/*',
-    'modules/**/*',
-    'bower_components/**/*',
-    'demo/**/*.html'
+    'modules/**/*'
 ];
 
 gulp.task('deploy:other', function () {
@@ -101,11 +99,21 @@ gulp.task('deploy:other', function () {
         .pipe(exClient.dest(targetConfiguration))
 })
 
-gulp.task('deploy', ['deploy:other', 'deploy:components', 'deploy:styles'])
+var components = [
+    '*-*.html'
+];
+
+gulp.task('deploy:moveToBowerDir', function () {
+    return gulp.src(components, {base: './'})
+        .pipe(gulp.dest('bower_components/usermanager'))
+})
+
+gulp.task('deploy', ['deploy:moveToBowerDir', 'deploy:other', 'deploy:components', 'deploy:styles'])
 
 gulp.task('watch', function () {
     gulp.watch('resources/css/!*', ['deploy:styles'])
     gulp.watch(otherPaths, ['deploy:other'])
+    gulp.watch(components, ['deploy:moveToBowerDir'])
     gulp.watch('*.html', ['deploy:components'])
 })
 
