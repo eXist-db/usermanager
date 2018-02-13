@@ -36,23 +36,21 @@
     "polymer": "^2.0.0"
   },
   "ignore": [
-    "demo",
-    "modules",
-    "resources",
-    ".idea",
-    "bower.json.ignores",
-    ".gitignore",
-    "build",
+    "**/.*",
     "bower_components",
+    "build",
+    "demo",
     "node_modules",
+    "resources",
     "test",
+    "bower.json.ignores",
     "build.xml",
     "controller.xql",
     "expath-pkg.xml",
-    "repo.xml",
+    "gulpfile.js",
     "package.json",
     "polymer.json",
-    "gulpfile.js"
+    "repo.xml"
   ],
   "private":true
 }
