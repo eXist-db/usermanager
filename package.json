@@ -1,5 +1,5 @@
 {
-  "name": "shc",
+  "name": "userManager",
   "version": "1.0.0",
   "description": "existdb-usermanager",
   "main": "index.js",

@@ -46,6 +46,7 @@
     "build.xml",
     "controller.xql",
     "expath-pkg.xml",
+    "existdb-usermanager-app",
     "gulpfile.js",
     "package.json",
     "polymer.json",
