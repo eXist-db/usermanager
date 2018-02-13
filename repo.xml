@@ -11,13 +11,18 @@
     <prepare></prepare>
     <finish/>
     <changelog>
-    <change version="0.14.2">
-        <ul xmls="http://www.w3.org/1999/xhtml">
-            <li>fixed login</li>
-            <li>slightly changed layout and styling</li>
-            <li>seperated app container from actual usermanager component</li>
-        </ul>
-    </change>
+        <change version="0.15.1">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>version fix</li>
+            </ul>
+        </change>
+        <change version="0.14.2">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixed login</li>
+                <li>slightly changed layout and styling</li>
+                <li>seperated app container from actual usermanager component</li>
+            </ul>
+        </change>
     </changelog>
 
 </meta>
