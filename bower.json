@@ -1,5 +1,5 @@
 {
-  "name": "usermanager",
+  "name": "existdb-usermanager",
   "main": "existdb-usermanager.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
@@ -43,7 +43,6 @@
     "node_modules",
     "resources",
     "test",
-    "bower.json.ignores",
     "build.xml",
     "controller.xql",
     "expath-pkg.xml",
