@@ -36,8 +36,8 @@
     "polymer": "^2.0.0"
   },
   "ignore": [
-    "demo/",
-    "modules/",
+    "demo",
+    "modules",
     "resources",
     ".idea",
     "bower.json.ignores",
@@ -53,6 +53,6 @@
     "package.json",
     "polymer.json",
     "gulpfile.js"
-  ]
-
+  ],
+  "private":true
 }
