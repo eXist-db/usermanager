@@ -136,23 +136,22 @@ declare function local:delete-group($group as xs:string) as element(deleted) {
 };
 
 declare function local:update-user($user as xs:string, $request-body as xs:string) as element() {
-    return
-        if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
-            (
-                response:set-header("Location", local:get-user-location($user)),
-                response:set-status-code($local:HTTP_OK),
+    if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
+        (
+            response:set-header("Location", local:get-user-location($user)),
+            response:set-status-code($local:HTTP_OK),
 
-                (: TODO ideally would like to set 204 above and not return and content in the body
-        however the controller.xql is not capable of doing that, as there is no dispatch/ignore
-        that just returns processing with an empty body.
-        :)
+            (: TODO ideally would like to set 204 above and not return and content in the body
+    however the controller.xql is not capable of doing that, as there is no dispatch/ignore
+    that just returns processing with an empty body.
+    :)
 
-                (: send back updated group json :)
-                usermanager:get-user($user)
-            ) else (
-            response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
-            <error>could not update group</error>
-        )
+            (: send back updated group json :)
+            usermanager:get-user($user)
+        ) else (
+        response:set-status-code($local:HTTP_INTERNAL_SERVER_ERROR),
+        <error>could not update group</error>
+    )
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
