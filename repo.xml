@@ -11,6 +11,13 @@
     <prepare></prepare>
     <finish/>
     <changelog>
+        <change version="0.15.4">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixes the regex for allowed group names</li>
+                <li>fixes URL path issues with reconfigured jetty e.g. using '/' instead of '/exist'</li>
+                <li>fixes a bug with editing groups without members</li>
+            </ul>
+        </change>
         <change version="0.15.1">
             <ul xmls="http://www.w3.org/1999/xhtml">
                 <li>version fix</li>

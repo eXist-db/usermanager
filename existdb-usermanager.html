@@ -342,7 +342,7 @@
                    method="get"
                    handle-as="json"
                    on-response="_handleUsers"
-                   url="/exist/apps/usermanager/api/user/"
+f                   url="{{$rootPath}}api/user/"
                    on-error="_handleUserListError"
                    ></iron-ajax>
 
@@ -352,7 +352,7 @@
                    handle-as="json"
                    on-response="_handleUserSaved"
                    content-type="application/json"
-                   url="/exist/apps/usermanager/api/user/"
+                   url="{{$rootPath}}api/user/"
                    on-error="_handleSaveUserError"></iron-ajax>
 
         <iron-ajax id="deleteUser"
@@ -361,14 +361,14 @@
                    handle-as="json"
                    on-response="_handleUserDeleted"
                    content-type="application/json"
-                   url="/exist/apps/usermanager/api/user/"
+                   url="{{$rootPath}}api/user/"
                    on-error="_handleUserDeleteError"></iron-ajax>
 
         <iron-ajax id="loadGroupList"
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
-                   url="/exist/apps/usermanager/api/group/"
+                   url="{{$rootPath}}api/group/"
                    on-error="_handleGroupListError"
                     auto></iron-ajax>
 
@@ -378,7 +378,7 @@
                    handle-as="json"
                    on-response="_handleGroupSaved"
                    content-type="application/json"
-                   url="/exist/apps/usermanager/api/group/"
+                   url="{{$rootPath}}api/group/"
                    on-error="_handleSaveGroupError"></iron-ajax>
 
         <iron-ajax id="deleteGroup"
@@ -387,7 +387,7 @@
                    handle-as="json"
                    on-response="_handleGroupDeleted"
                    content-type="application/json"
-                   url="/exist/apps/usermanager/api/user/"
+                   url="{{$rootPath}}api/user/"
                    on-error="_handleGroupDeletedError"></iron-ajax>
 
 
@@ -514,13 +514,13 @@
                             <h2>Group</h2>
                             <iron-form id="groupForm" allow-redirect="false">
                                 <form action="" method="">
-                                    <paper-input label="Group Name*" value="{{selectedGroup.group}}" pattern="[A-Za-z0-9_-]+"
+                                    <paper-input label="Group Name*" value="{{selectedGroup.group}}" pattern="[@.A-Za-z0-9_-]+"
                                                  error-message="only the chars A-Z, a-z and numbers are allowed as group name" auto-validate auto-focus></paper-input>
                                     <paper-input label="Description"
                                                  value="{{selectedGroup.description}}"></paper-input>
 
                                     <div class="list-heading">
-                                        <span class="member-heading">Members of this group</span>
+                                        <span class="member-heading">Users in this group</span>
                                         <span class="isManager">is Manager</span>
                                     </div>
 
@@ -617,12 +617,12 @@
 
                     userUrl: {
                         type: String,
-                        value: "/exist/apps/usermanager/api/user/",
+                        value: 'api/user/',
                         readonly: true
                     },
                     groupUrl: {
                         type: String,
-                        value: "/exist/apps/usermanager/api/group/",
+                        value: 'api/group/',
                         readonly: true
                     },
                     mode: {
@@ -635,6 +635,7 @@
                     }
                 };
             }
+
 
 /*
             static get observers() {
@@ -836,7 +837,7 @@
                     this.$.saveUser.body = JSON.stringify(this.selectedUser);
                     console.log('body ', this.$.saveUser.body);
 
-                    this.$.saveUser.url = this.userUrl + this.selectedUser.user;
+                    this.$.saveUser.url = this.rootPath + this.userUrl + this.selectedUser.user;
                     this.$.saveUser.generateRequest();
                 }
             }
@@ -864,7 +865,7 @@
             _handleDeleteUser(e) {
                 console.log("_handleDeleteUser ", this.selectedUser.user);
                 if (confirm('Really delete this user?')) {
-                    this.$.deleteUser.url = this.userUrl + this.selectedUser.user;
+                    this.$.deleteUser.url = this.rootPath + this.userUrl + this.selectedUser.user;
                     this.$.deleteUser.generateRequest();
                 }
             }
@@ -924,6 +925,9 @@
                 console.log("_selectGroupMembers ", this.selectedGroup);
                 console.log("_selectGroupMembers ", this.selectedGroup.members);
                 var arr = [];
+
+                if(this.selectedGroup.members == undefined) return;
+
                 this.selectedGroup.members.forEach(function (item){
                     arr.push(item.member);
                 });
@@ -1002,7 +1006,7 @@
                     console.log("saving... ", this.selectedGroup);
                     this.$.saveGroup.body = JSON.stringify(this.selectedGroup);
 
-                    this.$.saveGroup.url = this.groupUrl + this.selectedGroup.group;
+                    this.$.saveGroup.url = this.rootPath + this.groupUrl + this.selectedGroup.group;
                     this.$.saveGroup.generateRequest();
                 }
             }
@@ -1070,7 +1074,7 @@
             _handleDeleteGroup(){
                 console.log("_handleDeleteGroupr");
                 if (confirm('Really delete this group?')) {
-                    this.$.deleteGroup.url = this.groupUrl + this.selectedGroup.group;
+                    this.$.deleteGroup.url = this.rootPath + this.groupUrl + this.selectedGroup.group;
                     this.$.deleteGroup.generateRequest();
                 }
 

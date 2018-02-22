@@ -277,6 +277,7 @@ else if (ends-with($exist:path, "index.html")) then (
             if(not(exists($user)) or not(sm:is-dba($user))) then
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <redirect url="login.html"/>
+                    <cache-control cache="no"/>
                 </dispatch>
             else if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
                 (
