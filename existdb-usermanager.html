@@ -18,8 +18,8 @@
 <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
-
 <link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../paper-badge/paper-badge.html">
 
 
 
@@ -64,8 +64,23 @@
 
                 position: relative;
                 /*max-width: 600;*/
-            }
 
+/*
+                --paper-badge-width:36px;
+                --paper-badge-height:36px;
+*/
+/*
+                --paper-badge:{
+                    display: inline-block;
+                    left:0;
+                    z-index: 10;
+
+                };
+*/
+            }
+            paper-badge{
+                z-index: 10;
+            }
             paper-tab{
                 font-size:24px;
                 font-weight: 400;
@@ -335,6 +350,10 @@
                 overflow: auto;
                 background: var(--paper-grey-100);
             }
+
+            #usersLabel{
+                position: relative;
+            }
         </style>
 
         <iron-ajax id="loadUserList"
@@ -407,13 +426,16 @@ f                   url="{{$rootPath}}api/user/"
             <!--</app-header>-->
             <!--<div id="wrapper">-->
 
+                <paper-badge label="13" for="usersLabel"></paper-badge>
 
                 <iron-pages id="pages" selected="{{selected}}">
                     <div>
                         <app-header-layout has-scrolling-region>
                             <app-header slot="header" sticky fixed>
                                 <paper-tabs selected="{{selected}}">
-                                    <paper-tab>Users</paper-tab>
+                                    <paper-tab>
+                                        <span id="usersLabel">Users</span>
+                                    </paper-tab>
                                     <paper-tab>Groups</paper-tab>
                                 </paper-tabs>
                             </app-header>
@@ -632,6 +654,10 @@ f                   url="{{$rootPath}}api/user/"
                     user:{
                         type: String,
                         reflectToAttribute:true
+                    },
+                    userCount:{
+                        type: Number,
+
                     }
                 };
             }
