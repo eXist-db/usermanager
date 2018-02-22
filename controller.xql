@@ -38,7 +38,6 @@ import module namespace usermanager = "http://exist-db.org/apps/userManager" at 
 import module namespace jsjson = "http://johnsnelson/json" at "modules/jsjson.xqm";
 import module namespace login="http://exist-db.org/xquery/login" at "resource:org/exist/xquery/modules/persistentlogin/login.xql";
 
-import module namespace console="http://exist-db.org/xquery/console";
 
 (:declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";:)
 (:declare option output:method "json";:)
@@ -137,8 +136,6 @@ declare function local:delete-group($group as xs:string) as element(deleted) {
 };
 
 declare function local:update-user($user as xs:string, $request-body as xs:string) as element() {
-    let $log := console:log("update-user " || $user)
-    let $log := console:log($request-body)
     return
         if(usermanager:update-user($user, jsjson:parse-json($request-body)))then
             (
@@ -159,10 +156,6 @@ declare function local:update-user($user as xs:string, $request-body as xs:strin
 };
 
 declare function local:update-group($group as xs:string, $request-body) as element() {
-    console:log("update-group >"),
-    console:log($group),
-    console:log($request-body),
-    console:log("<update-group"),
     if(usermanager:update-group($group, jsjson:parse-json($request-body)))then
         (
             response:set-header("Location", local:get-group-location($group)),
@@ -182,9 +175,7 @@ declare function local:update-group($group as xs:string, $request-body) as eleme
 };
 
 declare function local:create-user($user as xs:string, $request-body) as element() {
-    let $log := console:log("user " || $user)
     let $body := parse-json($request-body)
-    let $log := console:log($body)
     let $user := usermanager:create-user(jsjson:parse-json($request-body)) return
 
         if($user)then
@@ -281,11 +272,9 @@ else if (ends-with($exist:path, "index.html")) then (
                 </dispatch>
             else if($exist:path eq "/api/user/" and request:get-method() eq "GET")then
                 (
-                    console:log("get users"),
                     local:list-users(request:get-parameter("user", ()))
                 )
             else if(starts-with($exist:path, "/api/user/"))then
-                let $log := console:log("hit user API")
                 let $user := replace($exist:path, "/api/user/", "") return
                     if(request:get-method() eq "DELETE")then
                         local:delete-user($user)
@@ -295,7 +284,6 @@ else if (ends-with($exist:path, "index.html")) then (
                             <error>expected PUT for User and not POST</error>
                         )
                     else if(request:get-method() eq "PUT") then
-                            let $log := console:log("hit user API PUT")
                             let $body := util:binary-to-string(request:get-data()) return
                                 if(usermanager:user-exists($user))then
                                 (: update user:)
@@ -308,7 +296,6 @@ else if (ends-with($exist:path, "index.html")) then (
                                         <error>user name is missing</error>
                                     )
                         else if(request:get-method() eq "GET") then (
-                                console:log("get users"),
                                 local:get-user($user)
                             )
                             else
@@ -337,7 +324,6 @@ else if (ends-with($exist:path, "index.html")) then (
 
                             else if(request:get-method() eq "PUT") then
                                     let $data := util:binary-to-string(request:get-data())
-                                    let $log := console:log($data)
                                     let $body := $data return
                                         if(usermanager:group-exists($group))then
                                             local:update-group($group, $body)

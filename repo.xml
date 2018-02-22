@@ -11,6 +11,11 @@
     <prepare></prepare>
     <finish/>
     <changelog>
+        <change version="0.15.5">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixes #13 - dependency on console module removed.</li>
+            </ul>
+        </change>
         <change version="0.15.4">
             <ul xmls="http://www.w3.org/1999/xhtml">
                 <li>fixes the regex for allowed group names</li>
