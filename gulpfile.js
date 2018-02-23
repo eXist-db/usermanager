@@ -108,12 +108,13 @@ gulp.task('deploy:moveToBowerDir', function () {
         .pipe(gulp.dest('bower_components/usermanager'))
 })
 
-gulp.task('deploy', ['deploy:moveToBowerDir', 'deploy:other', 'deploy:components', 'deploy:styles'])
+// gulp.task('deploy', ['deploy:moveToBowerDir', 'deploy:other', 'deploy:components', 'deploy:styles'])
+gulp.task('deploy', ['deploy:other', 'deploy:components', 'deploy:styles'])
 
 gulp.task('watch', function () {
     gulp.watch('resources/css/!*', ['deploy:styles'])
     gulp.watch(otherPaths, ['deploy:other'])
-    gulp.watch(components, ['deploy:moveToBowerDir'])
+    // gulp.watch(components, ['deploy:moveToBowerDir'])
     gulp.watch('*.html', ['deploy:components'])
 })
 
