@@ -7,15 +7,6 @@
     <property name="build.dir" value="build"/>
     <property name="polymer.build.dir" value="${build.dir}/default"/>
 
-    <target name="prepare" description="copy actual web components into bower_components dir to avoid path referencing problems.">
-        <mkdir dir="${basedir}/bower_components/${package(abbrev)}"/>
-        <copy todir="${basedir}/bower_components/${package(abbrev)}">
-            <fileset dir="${basedir}" includes="*-*.html"/>
-        </copy>
-    </target>
-
-
-    <!--<target name="xar" depends="prepare">-->
     <target name="xar">
         <mkdir dir="${build.dir}"/>
         <zip basedir="." destfile="${build.dir}/${project.app}-${project.version}.xar" excludes="bower.json.bak build.xml ${build.dir}/**, node_modules/**, doc/**, gulpfile.js, package.json"/>
