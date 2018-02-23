@@ -1,44 +1,3 @@
-<link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer/lib/elements/array-selector.html">
-<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
-<link rel="import" href="../paper-tabs/paper-tabs.html">
-<link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../paper-styles/color.html">
-<link rel="import" href="../paper-styles/typography.html">
-<link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-icons/social-icons.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../iron-collapse/iron-collapse.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="../paper-password-input/paper-password-input.html">
-<link rel="import" href="../paper-password-input/match-passwords-validator.html">
-<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../paper-menu-button/paper-menu-button.html">
-<link rel="import" href="../paper-listbox/paper-listbox.html">
-
-<link rel="import" href="../paper-checkbox/paper-checkbox.html">
-
-
-
-<link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../paper-fab/paper-fab.html">
-<link rel="import" href="../paper-toast/paper-toast.html">
-<link rel="import" href="../app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../app-layout/app-header/app-header.html">
-<link rel="import" href="../iron-form/iron-form.html">
-
-<link rel="import" href="../app-layout/app-drawer/app-drawer.html">
-
-
-<script src="../jquery/dist/jquery.min.js"></script>
-<script src="../velocity/velocity.min.js"></script>
-<script src="../velocity/velocity.ui.min.js"></script>
-
-
 <dom-module id="existdb-usermanager">
     <template>
         <style>
@@ -54,20 +13,21 @@
                 --iron-icon-width: 62px;
                 --iron-icon-height: 62px;
                 --paper-icon-button-ink-color: var(--paper-grey-700);
-                --paper-tabs-selection-bar:{
+                --paper-tabs-selection-bar: {
                     border-width: 5px;
                 };
 
-                --paper-tabs:{
-                    color:var(--paper-blue-700);
+                --paper-tabs: {
+                    color: var(--paper-blue-700);
                 };
 
                 position: relative;
                 /*max-width: 600;*/
+                display: block;
             }
 
-            paper-tab{
-                font-size:24px;
+            paper-tab {
+                font-size: 24px;
                 font-weight: 400;
             }
 
@@ -94,7 +54,7 @@
 
             h2 {
                 @apply(--paper-font-headline);
-                color:black;
+                color: black;
             }
 
             ul {
@@ -107,8 +67,8 @@
                 background: white;
                 margin: 10px 0;
                 position: relative;
-                border:1px solid var(--paper-grey-200);
-                color:black;
+                border: 1px solid var(--paper-grey-200);
+                color: black;
             }
 
             .user, .group {
@@ -149,7 +109,7 @@
                 position: relative;
             }
 
-            .list-heading{
+            .list-heading {
                 display: block;
                 width: 100%;
             }
@@ -158,10 +118,11 @@
                 margin-top: 40px;
                 display: inline-block;
             }
-            .isManager{
+
+            .isManager {
                 margin-top: 40px;
-                position:absolute;
-                right:80px;
+                position: absolute;
+                right: 80px;
                 display: inline-block;
             }
 
@@ -253,9 +214,8 @@
                 min-height: 54px;
                 position: relative;
                 padding: 10px 10px 10px 100px;
-                cursor:pointer;
+                cursor: pointer;
             }
-
 
             .user-icon, .group-icon {
                 position: absolute;
@@ -269,9 +229,10 @@
             }
 
             paper-toast {
-                width: 100%;
+                /*width: 100%;*/
                 margin: 0;
                 font-size: 20px;
+                color: white;
             }
 
             paper-toast.errorReporter {
@@ -279,10 +240,10 @@
                 --paper-toast-background-color: var(--paper-red-500);
                 --paper-toast-color: white;
             }
-            paper-toast.errorReporter a{
-                float:right;
-            }
 
+            paper-toast.errorReporter a {
+                float: right;
+            }
 
             .editUser, .editGroup {
                 width: 100%;
@@ -298,39 +259,44 @@
                 display: block;
             }
 
-            paper-button.save.disabled{
-                color:var(--paper-grey-300);
-            }
-            paper-toggle-button.manager{
-                float:right;
-            }
-            .member-user{
-                flex-grow:3;
+            paper-button.save.disabled {
+                color: var(--paper-grey-300);
             }
 
-            .checkWrapper{
-                position:relative;
-            }
-            paper-checkbox{
-                position:absolute;
-                right:10px;
-                z-index:10;
-                top:-23px;
+            paper-toggle-button.manager {
+                float: right;
             }
 
-            app-header{
+            .member-user {
+                flex-grow: 3;
+            }
+
+            .checkWrapper {
+                position: relative;
+            }
+
+            paper-checkbox {
+                position: absolute;
+                right: 10px;
+                z-index: 10;
+                top: -23px;
+            }
+
+            app-header {
                 height: 60px;
             }
-            paper-tabs{
+
+            paper-tabs {
                 height: 60px;
                 position: fixed;
-                top:0;
-                left:0;
-                z-index:10;
-                width:100%;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                width: 100%;
                 background: var(--paper-blue-100);
             }
-            iron-pages{
+
+            iron-pages {
                 /*margin-top:70px;*/
                 overflow: auto;
                 background: var(--paper-grey-100);
@@ -342,9 +308,8 @@
                    method="get"
                    handle-as="json"
                    on-response="_handleUsers"
-f                   url="{{$rootPath}}api/user/"
                    on-error="_handleUserListError"
-                   ></iron-ajax>
+        ></iron-ajax>
 
         <iron-ajax id="saveUser"
                    with-credentials
@@ -352,7 +317,6 @@ f                   url="{{$rootPath}}api/user/"
                    handle-as="json"
                    on-response="_handleUserSaved"
                    content-type="application/json"
-                   url="{{$rootPath}}api/user/"
                    on-error="_handleSaveUserError"></iron-ajax>
 
         <iron-ajax id="deleteUser"
@@ -361,16 +325,14 @@ f                   url="{{$rootPath}}api/user/"
                    handle-as="json"
                    on-response="_handleUserDeleted"
                    content-type="application/json"
-                   url="{{$rootPath}}api/user/"
                    on-error="_handleUserDeleteError"></iron-ajax>
 
         <iron-ajax id="loadGroupList"
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
-                   url="{{$rootPath}}api/group/"
                    on-error="_handleGroupListError"
-                    auto></iron-ajax>
+        ></iron-ajax>
 
         <iron-ajax id="saveGroup"
                    with-credentials
@@ -378,7 +340,6 @@ f                   url="{{$rootPath}}api/user/"
                    handle-as="json"
                    on-response="_handleGroupSaved"
                    content-type="application/json"
-                   url="{{$rootPath}}api/group/"
                    on-error="_handleSaveGroupError"></iron-ajax>
 
         <iron-ajax id="deleteGroup"
@@ -387,168 +348,156 @@ f                   url="{{$rootPath}}api/user/"
                    handle-as="json"
                    on-response="_handleGroupDeleted"
                    content-type="application/json"
-                   url="{{$rootPath}}api/user/"
                    on-error="_handleGroupDeletedError"></iron-ajax>
 
 
         <array-selector id="userselector" items="{{users}}" selected="{{selectedUser}}" multi toggle></array-selector>
-        <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi toggle></array-selector>
+        <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi
+                        toggle></array-selector>
 
-        <!--<app-header-layout>-->
-<!--
-            <app-header slot="header" fixed>
-                <h1>User Manager</h1>
-            </app-header>
--->
+        <iron-pages id="pages" selected="{{selected}}">
+            <div>
+                <app-header-layout has-scrolling-region>
+                    <app-header slot="header" sticky fixed>
+                        <paper-tabs selected="{{selected}}">
+                            <paper-tab>Users</paper-tab>
+                            <paper-tab>Groups</paper-tab>
+                        </paper-tabs>
+                    </app-header>
+                    <ul id="userListPage">
+                        <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
 
-            <!--<app-header slot="header" sticky>-->
-                <!--<app-toolbar>-->
-                <!--</app-toolbar>-->
-            <!--</app-header>-->
-            <!--<div id="wrapper">-->
+                        <template id="userList" is="dom-repeat" items="{{users}}" as="item">
 
+                            <li class="user-entry" on-tap="_editUser">
+                                <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
+                                <span class="user" title="User Name">{{item.user}}</span>
+                                <span class="fullname">{{item.fullName}}</span>
+                                <span class="description">{{item.description}}</span>
+                                <!--<paper-icon-button id="moredetail" class="more" icon="arrow-forward" ></paper-icon-button>-->
+                            </li>
+                        </template>
+                    </ul>
+                </app-header-layout>
+            </div>
+            <div>
+                <app-header-layout has-scrolling-region>
+                    <app-header slot="header" sticky fixed>
+                        <paper-tabs selected="{{selected}}">
+                            <paper-tab>Users</paper-tab>
+                            <paper-tab>Groups</paper-tab>
+                        </paper-tabs>
+                    </app-header>
 
-                <iron-pages id="pages" selected="{{selected}}">
-                    <div>
-                        <app-header-layout has-scrolling-region>
-                            <app-header slot="header" sticky fixed>
-                                <paper-tabs selected="{{selected}}">
-                                    <paper-tab>Users</paper-tab>
-                                    <paper-tab>Groups</paper-tab>
-                                </paper-tabs>
-                            </app-header>
-                            <ul id="userListPage">
-                                <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
+                    <ul id="groupListPage">
+                        <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
 
-                                <template id="userList" is="dom-repeat" items="{{users}}" as="item">
+                        <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
+                            <li class="group-entry" on-tap="_editGroup">
+                                <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
+                                <span class="group" title="Group">{{item.group}}</span>
+                                <span class="description">{{item.description}}</span>
+                                <!--
+                                                                <paper-icon-button class="more" icon="expand-more"
+                                                                                   on-tap="editGroup"></paper-icon-button>
+                                -->
+                            </li>
+                        </template>
+                    </ul>
+                </app-header-layout>
 
-                                    <li class="user-entry" on-tap="_editUser">
-                                        <iron-icon class="icon user-icon" icon="social:person"></iron-icon>
-                                        <span class="user" title="User Name">{{item.user}}</span>
-                                        <span class="fullname">{{item.fullName}}</span>
-                                        <span class="description">{{item.description}}</span>
-                                        <!--<paper-icon-button id="moredetail" class="more" icon="arrow-forward" ></paper-icon-button>-->
-                                    </li>
+            </div>
+
+            <div id="userPage" class="editUser">
+                <paper-icon-button class="back" icon="close" on-click="_userBack"
+                                   autofocus></paper-icon-button>
+
+                <div class="details">
+                    <h2>User</h2>
+                    <iron-form id="userForm" allow-redirect="false">
+                        <form action="" method="">
+                            <paper-input id="userInput" label="User Name*" value="{{selectedUser.user}}"
+                                         class="username" pattern="[@.A-Za-z0-9_-]+"
+                                         error-message="only the chars A-Z, a-z and numbers are allowed as username"
+                                         auto-validate auto-focus></paper-input>
+                            <paper-input label="Full Name" value="{{selectedUser.fullName}}"></paper-input>
+                            <paper-input label="Description" value="{{selectedUser.description}}"></paper-input>
+
+                            <match-passwords-validator id="match-passwords-validator"
+                                                       password="[[selectedUser.password]]"></match-passwords-validator>
+                            <paper-password-input label="Password"
+                                                  value="{{selectedUser.password}}"></paper-password-input>
+                            <paper-password-input id="confirm" label="Confirm" auto-validate
+                                                  validator="match-passwords-validator"
+                                                  error-message="Passwords need to match"></paper-password-input>
+
+                            <!--
+                                                                <paper-toggle-button class="accountActive" checked="{{selectedUser.disabled}}">
+                                                                    Account is disabled
+                                                                </paper-toggle-button>
+                            -->
+                            <paper-input label="umask" value="{{selectedUser.umask}}"></paper-input>
+
+                            <div class="member-heading">Member of groups</div>
+                            <paper-listbox id="memberOf" class="groupsOfUser" multi attr-for-selected="label">
+                                <template is="dom-repeat" items="{{groups}}" as="member">
+                                    <paper-item label="{{member.group}}">
+                                        {{member.group}}
+                                    </paper-item>
                                 </template>
-                            </ul>
-                        </app-header-layout>
-                    </div>
-                    <div>
-                        <app-header-layout has-scrolling-region>
-                            <app-header slot="header" sticky fixed>
-                                <paper-tabs selected="{{selected}}">
-                                    <paper-tab>Users</paper-tab>
-                                    <paper-tab>Groups</paper-tab>
-                                </paper-tabs>
-                            </app-header>
+                            </paper-listbox>
+                            <paper-button id="save" class="save" on-tap="_handleSaveUser">save</paper-button>
+                            <paper-button id="delete" class="delete" on-tap="_handleDeleteUser">delete user
+                            </paper-button>
+                        </form>
+                    </iron-form>
+                </div>
 
-                            <ul id="groupListPage">
-                                <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
+            </div>
 
-                                <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
-                                    <li class="group-entry" on-tap="_editGroup">
-                                        <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
-                                        <span class="group" title="Group">{{item.group}}</span>
-                                        <span class="description">{{item.description}}</span>
-                                        <!--
-                                                                        <paper-icon-button class="more" icon="expand-more"
-                                                                                           on-tap="editGroup"></paper-icon-button>
-                                        -->
-                                    </li>
-                                </template>
-                            </ul>
-                        </app-header-layout>
+            <div id="groupPage" class="editGroup">
+                <paper-icon-button class="back" icon="close" on-click="_groupBack"
+                                   autofocus></paper-icon-button>
 
-                    </div>
+                <div class="details">
+                    <h2>Group</h2>
+                    <iron-form id="groupForm" allow-redirect="false">
+                        <form action="" method="">
+                            <paper-input label="Group Name*" value="{{selectedGroup.group}}" pattern="[@.A-Za-z0-9_-]+"
+                                         error-message="only the chars A-Z, a-z and numbers are allowed as group name"
+                                         auto-validate auto-focus></paper-input>
+                            <paper-input label="Description"
+                                         value="{{selectedGroup.description}}"></paper-input>
 
-                    <div id="userPage" class="editUser">
-                        <paper-icon-button class="back" icon="close" on-click="_userBack"
-                                           autofocus></paper-icon-button>
+                            <div class="list-heading">
+                                <span class="member-heading">Users in this group</span>
+                                <span class="isManager">is Manager</span>
+                            </div>
 
-                        <div class="details">
-                            <h2>User</h2>
-                            <iron-form id="userForm" allow-redirect="false">
-                                <form action="" method="">
-                                    <paper-input id="userInput" label="User Name*" value="{{selectedUser.user}}"
-                                                     class="username" pattern="[@.A-Za-z0-9_-]+"
-                                                     error-message="only the chars A-Z, a-z and numbers are allowed as username" auto-validate auto-focus></paper-input>
-                                    <paper-input label="Full Name" value="{{selectedUser.fullName}}"></paper-input>
-                                    <paper-input label="Description" value="{{selectedUser.description}}"></paper-input>
+                            <paper-listbox id="groupMembers" multi attr-for-selected="label" selectable="paper-item">
+                                <template is="dom-repeat" items="[[users]]">
+                                    <paper-item label="[[item.user]]">
+                                        <!--<paper-item-body>-->
+                                        <span class="member-user">[[item.user]]</span>
+                                        <!--<paper-checkbox checked="[[item.isManager]]"></paper-checkbox>-->
 
-                                    <match-passwords-validator id="match-passwords-validator"
-                                                               password="[[selectedUser.password]]"></match-passwords-validator>
-                                    <paper-password-input label="Password"
-                                                          value="{{selectedUser.password}}"></paper-password-input>
-                                    <paper-password-input id="confirm" label="Confirm" auto-validate
-                                                          validator="match-passwords-validator"
-                                                          error-message="Passwords need to match"></paper-password-input>
-
-<!--
-                                    <paper-toggle-button class="accountActive" checked="{{selectedUser.disabled}}">
-                                        Account is disabled
-                                    </paper-toggle-button>
--->
-                                    <paper-input label="umask" value="{{selectedUser.umask}}"></paper-input>
-
-                                    <div class="member-heading">Member of groups</div>
-                                    <paper-listbox id="memberOf" class="groupsOfUser" multi attr-for-selected="label">
-                                        <template is="dom-repeat" items="{{groups}}" as="member">
-                                            <paper-item label="{{member.group}}">
-                                                {{member.group}}
-                                            </paper-item>
-                                        </template>
-                                    </paper-listbox>
-                                    <paper-button id="save" class="save" on-tap="_handleSaveUser">save</paper-button>
-                                    <paper-button id="delete" class="delete" on-tap="_handleDeleteUser">delete user</paper-button>
-                                </form>
-                            </iron-form>
-                        </div>
-
-                    </div>
-
-                    <div id="groupPage" class="editGroup">
-                        <paper-icon-button class="back" icon="close" on-click="_groupBack"
-                                           autofocus></paper-icon-button>
-
-                        <div class="details">
-                            <h2>Group</h2>
-                            <iron-form id="groupForm" allow-redirect="false">
-                                <form action="" method="">
-                                    <paper-input label="Group Name*" value="{{selectedGroup.group}}" pattern="[@.A-Za-z0-9_-]+"
-                                                 error-message="only the chars A-Z, a-z and numbers are allowed as group name" auto-validate auto-focus></paper-input>
-                                    <paper-input label="Description"
-                                                 value="{{selectedGroup.description}}"></paper-input>
-
-                                    <div class="list-heading">
-                                        <span class="member-heading">Users in this group</span>
-                                        <span class="isManager">is Manager</span>
+                                        <!--</paper-item-body>-->
+                                    </paper-item>
+                                    <div class="checkWrapper">
+                                        <paper-checkbox checked="[[item.isManager]]"
+                                                        on-click="_toggleManager"></paper-checkbox>
                                     </div>
-
-                                    <paper-listbox id="groupMembers" multi attr-for-selected="label" selectable="paper-item">
-                                        <template is="dom-repeat" items="[[users]]">
-                                            <paper-item label="[[item.user]]">
-                                                <!--<paper-item-body>-->
-                                                    <span class="member-user">[[item.user]]</span>
-                                                    <!--<paper-checkbox checked="[[item.isManager]]"></paper-checkbox>-->
-
-                                                <!--</paper-item-body>-->
-                                            </paper-item>
-                                            <div class="checkWrapper">
-                                                <paper-checkbox checked="[[item.isManager]]" on-click="_toggleManager"></paper-checkbox>
-                                            </div>
-                                        </template>
-                                    </paper-listbox>
-                                    <paper-button class="save" on-tap="_handleSaveGroup">save</paper-button>
-                                    <paper-button class="delete" on-tap="_handleDeleteGroup">delete group</paper-button>
-                                </form>
-                            </iron-form>
-                        </div>
-                    </div>
-                </iron-pages>
-            <!--</div>-->
+                                </template>
+                            </paper-listbox>
+                            <paper-button class="save" on-tap="_handleSaveGroup">save</paper-button>
+                            <paper-button class="delete" on-tap="_handleDeleteGroup">delete group</paper-button>
+                        </form>
+                    </iron-form>
+                </div>
+            </div>
+        </iron-pages>
 
 
-        <!--</app-header-layout>-->
         <paper-toast id="messenger" class="messenger" text=""></paper-toast>
         <paper-toast id="errorReporter" class="errorReporter" text="" duration="0">
             <a href="#" on-tap="_closeToast">close</a>
@@ -598,11 +547,11 @@ f                   url="{{$rootPath}}api/user/"
                             groups: [],
                         }
                     },
-                    selectedGroup:{
+                    selectedGroup: {
                         type: Object,
                         value: {
-                            group:'',
-                            description:'',
+                            group: '',
+                            description: '',
                             members: [{
                                 member: '',
                                 isManager: false
@@ -612,7 +561,7 @@ f                   url="{{$rootPath}}api/user/"
                     groups: {
                         type: Array,
                         notify: true,
-                        value:[]
+                        value: []
                     },
 
                     userUrl: {
@@ -629,22 +578,14 @@ f                   url="{{$rootPath}}api/user/"
                         type: String,
                         value: 'edit'
                     },
-                    user:{
+                    user: {
                         type: String,
-                        reflectToAttribute:true
+                        reflectToAttribute: true
                     }
+
                 };
             }
 
-
-/*
-            static get observers() {
-                return [
-                    // Observer method name, followed by a list of dependencies, in parenthesis
-                    '_userNameChanged(selectedUser.*, filter)'
-                ]
-            }
-*/
 
             connectedCallback() {
                 super.connectedCallback();
@@ -661,20 +602,20 @@ f                   url="{{$rootPath}}api/user/"
             // ########################## private part ##########################
             // ########################## private part ##########################
 
-            _handleSelection(e){
+            _handleSelection(e) {
                 console.log('_handleSelection: ', e.composedPath());
 
                 var pathes = e.composedPath();
                 var toggle;
-                pathes.forEach(function (item){
+                pathes.forEach(function (item) {
                     console.log("path: ", item);
-                    if(item.nodeName.toLowerCase() == 'paper-toggle-button'){
-                        toggle=item;
+                    if (item.nodeName.toLowerCase() == 'paper-toggle-button') {
+                        toggle = item;
                     }
                 });
                 console.log('toggle?: ', toggle);
 
-                if(toggle != undefined){
+                if (toggle != undefined) {
                     e.stopPropagation();
                     e.preventDefault();
 //                    return false;
@@ -682,15 +623,8 @@ f                   url="{{$rootPath}}api/user/"
                 }
 
 
-
             }
 
-
-/*
-            _userNameChanged(change){
-                console.log("selected user change ", change);
-            }
-*/
 
             // >>>>>>>>>> PAGE SWITCHING LOGIC AND ANIMATIONS >>>>>>>>>>
             // >>>>>>>>>> PAGE SWITCHING LOGIC AND ANIMATIONS >>>>>>>>>>
@@ -699,22 +633,24 @@ f                   url="{{$rootPath}}api/user/"
                 if (page == 0) {
                     this._resetUserForm();
                     this._animUserPageOut(this.$.userPage);
-                } else if( page == 1){
+                } else if (page == 1) {
                     this._animUserPageOut(this.$.groupPage);
                 } else if (page == 2) {
                     // user edit page
                     this._animUserPageIn(this.$.userPage);
-                } else if( page == 3){
+                } else if (page == 3) {
                     this._animUserPageIn(this.$.groupPage);
                 }
                 this.$.pages.select(page);
             }
 
-            _pageChanged(page){
+            _pageChanged(page) {
                 console.log('_pageChanged: ', page);
-                if (page == 0){
+                console.log('_pageChanged importPath: ', this.importPath);
+                if (page == 0) {
+                    this.$.loadUserList.url = this.importPath + 'api/user/';
                     this.$.loadUserList.generateRequest();
-                } else if( page == 1){
+                    this.$.loadGroupList.url = this.importPath + 'api/group/';
                     this.$.loadGroupList.generateRequest();
                 }
             }
@@ -728,7 +664,7 @@ f                   url="{{$rootPath}}api/user/"
                     {
                         e: $(page),
                         p: "transition.expandOut",
-                        o: { duration: 200, sequenceQueue: false}
+                        o: {duration: 200, sequenceQueue: false}
                     }
                 ];
                 setTimeout(function () {
@@ -736,7 +672,7 @@ f                   url="{{$rootPath}}api/user/"
                 }, 1);
             }
 
-            _animUserPageIn(page){
+            _animUserPageIn(page) {
                 var anim = [
                     {e: $(page), p: "scroll", o: {offset: -120, duration: 10, sequenceQueue: true}},
                     {e: $(page), p: "transition.expandIn", o: {duration: 400}}
@@ -745,11 +681,10 @@ f                   url="{{$rootPath}}api/user/"
                     $.Velocity.RunSequence(anim);
                 }, 1);
             }
-            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
-            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
-            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
 
-
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
+            // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
 
 
             // >>>>>>>>>> USER >>>>>>>>>>
@@ -837,7 +772,7 @@ f                   url="{{$rootPath}}api/user/"
                     this.$.saveUser.body = JSON.stringify(this.selectedUser);
                     console.log('body ', this.$.saveUser.body);
 
-                    this.$.saveUser.url = this.rootPath + this.userUrl + this.selectedUser.user;
+                    this.$.saveUser.url = this.importPath + this.userUrl + this.selectedUser.user;
                     this.$.saveUser.generateRequest();
                 }
             }
@@ -855,7 +790,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * error-handler for user saving.
              */
-            _handleSaveUserError(e){
+            _handleSaveUserError(e) {
                 this._handleRequestError(this.$.saveUser.lastError);
             }
 
@@ -866,6 +801,7 @@ f                   url="{{$rootPath}}api/user/"
                 console.log("_handleDeleteUser ", this.selectedUser.user);
                 if (confirm('Really delete this user?')) {
                     this.$.deleteUser.url = this.rootPath + this.userUrl + this.selectedUser.user;
+                    this.$.deleteUser.url = this.importPath + 'api/user/';
                     this.$.deleteUser.generateRequest();
                 }
             }
@@ -883,7 +819,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * request handler for
              */
-            _handleUserDeleteError(){
+            _handleUserDeleteError() {
                 this._handleRequestError(this.$.deleteUser.lastError);
             }
 
@@ -898,7 +834,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * switches back to grouplist when being on group form.
              */
-            _groupBack(e){
+            _groupBack(e) {
                 this._switchPage(1);
             }
 
@@ -908,7 +844,7 @@ f                   url="{{$rootPath}}api/user/"
             _resetGroupForm() {
                 //reset eventual pre-existing values
                 this.selectedGroup = this.groups[this.groups.length - 1];
-                this.$.groupMembers.selectedValues=[];
+                this.$.groupMembers.selectedValues = [];
             }
 
             /**
@@ -926,9 +862,9 @@ f                   url="{{$rootPath}}api/user/"
                 console.log("_selectGroupMembers ", this.selectedGroup.members);
                 var arr = [];
 
-                if(this.selectedGroup.members == undefined) return;
+                if (this.selectedGroup.members == undefined) return;
 
-                this.selectedGroup.members.forEach(function (item){
+                this.selectedGroup.members.forEach(function (item) {
                     arr.push(item.member);
                 });
                 console.log("new array ", arr);
@@ -936,7 +872,7 @@ f                   url="{{$rootPath}}api/user/"
             }
 
 
-            _editGroup(e){
+            _editGroup(e) {
                 console.log("edit group ", e.model.get('item.group'));
                 console.log("edit group selected group ", this.selectedGroup);
 
@@ -977,7 +913,7 @@ f                   url="{{$rootPath}}api/user/"
                     description: '',
                     isManager: false
                 });
-                this.selectedGroup = this.groups[this.groups.length -1];
+                this.selectedGroup = this.groups[this.groups.length - 1];
 
                 console.log('selected group: ', this.selectedGroup);
                 this._resetGroupForm();
@@ -988,7 +924,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * handler calling server for saving a group.
              */
-            _handleSaveGroup(){
+            _handleSaveGroup() {
                 console.log("_handleSaveGroup");
                 var valid = this.$.groupForm.validate();
 
@@ -996,8 +932,8 @@ f                   url="{{$rootPath}}api/user/"
                     console.log("saving selected values... ", this.$.groupMembers.selectedValues);
 
                     var members = [];
-                    this.$.groupMembers.selectedValues.forEach(function(item){
-                        members.push({member:item, isManager:false});
+                    this.$.groupMembers.selectedValues.forEach(function (item) {
+                        members.push({member: item, isManager: false});
                     });
 
                     console.log("members: ", members);
@@ -1006,7 +942,7 @@ f                   url="{{$rootPath}}api/user/"
                     console.log("saving... ", this.selectedGroup);
                     this.$.saveGroup.body = JSON.stringify(this.selectedGroup);
 
-                    this.$.saveGroup.url = this.rootPath + this.groupUrl + this.selectedGroup.group;
+                    this.$.saveGroup.url = this.importPath + this.groupUrl + this.selectedGroup.group;
                     this.$.saveGroup.generateRequest();
                 }
             }
@@ -1014,7 +950,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * handler called after group has been saved on server.
              */
-            _handleGroupSaved(){
+            _handleGroupSaved() {
                 console.log('_handleUserSaved');
                 this.$.messenger.text = 'Group ' + this.selectedGroup.group + ' has been saved.';
                 this.$.messenger.open();
@@ -1024,26 +960,24 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * error-handler for deletion of groups.
              */
-            _handleSaveGroupError(){
+            _handleSaveGroupError() {
                 this._handleRequestError(this.$.saveGroup.lastError);
             }
 
-            _toggleManager(e, user){
-                console.log('_toggleManager',e);
-                console.log('_toggleManager modeo',e.model.item);
-                console.log('_toggleManager composedPath',e.composedPath());
+            _toggleManager(e, user) {
+                console.log('_toggleManager', e);
+                console.log('_toggleManager modeo', e.model.item);
+                console.log('_toggleManager composedPath', e.composedPath());
 
 
                 var pathes = e.composedPath();
                 var toggle;
-                pathes.forEach(function (item){
+                pathes.forEach(function (item) {
 //                    console.log("path: ", item);
-                    if(item.nodeType == 1 && item.nodeName.toLowerCase() == 'paper-checkbox'){
-                        toggle=item;
+                    if (item.nodeType == 1 && item.nodeName.toLowerCase() == 'paper-checkbox') {
+                        toggle = item;
                     }
                 });
-
-
 
 
                 console.log('_toggleManager toggle ', toggle);
@@ -1051,15 +985,13 @@ f                   url="{{$rootPath}}api/user/"
 
                 console.log("current group ", this.selectedGroup);
 
-/*
-                if(toggle.pressed){
-                    toggle.checked = false;
-                } else {
-                    toggle.checked = true;
-                }
-*/
-
-
+                /*
+                                if(toggle.pressed){
+                                    toggle.checked = false;
+                                } else {
+                                    toggle.checked = true;
+                                }
+                */
 
 
 //                e.target.checked = !e.target.checked;
@@ -1071,10 +1003,10 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * handler calling server for group deletion.
              */
-            _handleDeleteGroup(){
+            _handleDeleteGroup() {
                 console.log("_handleDeleteGroupr");
                 if (confirm('Really delete this group?')) {
-                    this.$.deleteGroup.url = this.rootPath + this.groupUrl + this.selectedGroup.group;
+                    this.$.deleteGroup.url = this.importPath + this.groupUrl + this.selectedGroup.group;
                     this.$.deleteGroup.generateRequest();
                 }
 
@@ -1083,7 +1015,7 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * handler called after group has been deleted.
              */
-            _handleGroupDeleted(){
+            _handleGroupDeleted() {
                 this._switchPage(1);
                 this.$.messenger.text = "Group " + this.selectedGroup.group + " has been deleted";
                 this.$.messenger.open();
@@ -1092,12 +1024,12 @@ f                   url="{{$rootPath}}api/user/"
             /**
              * error-handler for group deletion.
              */
-            _handleGroupDeletedError(){
+            _handleGroupDeletedError() {
                 this._handleRequestError(this.$.deleteGroup.lastError);
             }
 
 
-            _closeToast(e){
+            _closeToast(e) {
                 this.$.errorReporter.close();
             }
 
@@ -1112,16 +1044,12 @@ f                   url="{{$rootPath}}api/user/"
 
                 if (error.status == '403') {
                     this.$.errorReporter.text = "You don't have sufficient priviledges to access UserManager";
-                } else if(error.status == '400'){
+                } else if (error.status == '400') {
                     this.$.errorReporter.text = 'Server responded: ' + error.statusText + ': ' + error.response;
                 } else {
                     this.$.errorReporter.text = 'Server responded: ' + error.status + ' - ' + error.statusText;
                 }
                 this.$.errorReporter.open();
-            }
-
-            usersChange() {
-                console.log("############## users changed");
             }
 
 
