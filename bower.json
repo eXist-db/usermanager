@@ -19,8 +19,6 @@
     "paper-password-input": "^2.0.0",
     "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
-    "jquery": "^3.2.1",
-    "velocity": "^1.5.0",
     "app-layout": "PolymerElements/app-layout#^2.0.0",
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",

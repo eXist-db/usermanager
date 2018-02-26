@@ -252,7 +252,7 @@
 
             paper-icon-button.back, paper-icon-button.back {
                 position: fixed;
-                top: 20px;
+                top: 80px;
                 right: -32px;
                 z-index: 100;
                 margin-right: 50px;
@@ -301,6 +301,66 @@
                 overflow: auto;
                 background: var(--paper-grey-100);
             }
+
+
+            @-webkit-keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .fadeIn {
+                -webkit-animation-name: fadeIn;
+                animation-name: fadeIn;
+            }
+
+
+            @-webkit-keyframes zoomIn {
+                from {
+                    opacity: 0;
+                    -webkit-transform: scale3d(.1, .1, .1);
+                    transform: scale3d(.1, .1, .1);
+                }
+
+                50% {
+                    opacity: 0.3;
+                }
+
+            }
+
+            @keyframes zoomIn {
+                from {
+                    opacity: 0;
+                    -webkit-transform: scale3d(.1, .1, .1);
+                    transform: scale3d(.1, .1, .1);
+                }
+
+                50% {
+                    opacity: 0.3;
+
+                }
+            }
+
+            .zoomIn {
+                -webkit-animation-name: zoomIn;
+                animation-name: zoomIn;
+                /*animation-duration: 0.2s;*/
+            }
+
         </style>
 
         <iron-ajax id="loadUserList"
@@ -364,7 +424,7 @@
                             <paper-tab>Groups</paper-tab>
                         </paper-tabs>
                     </app-header>
-                    <ul id="userListPage">
+                    <ul id="userListPage" class="animated fadeIn">
                         <paper-fab id="addUser" icon="add" on-tap="_handleAddUser"></paper-fab>
 
                         <template id="userList" is="dom-repeat" items="{{users}}" as="item">
@@ -389,7 +449,7 @@
                         </paper-tabs>
                     </app-header>
 
-                    <ul id="groupListPage">
+                    <ul id="groupListPage" class="animated fadeIn">
                         <paper-fab id="addGroup" icon="add" on-tap="_handleAddGroup"></paper-fab>
 
                         <template id="groupList" is="dom-repeat" items="{{groups}}" as="item">
@@ -412,7 +472,7 @@
                 <paper-icon-button class="back" icon="close" on-click="_userBack"
                                    autofocus></paper-icon-button>
 
-                <div class="details">
+                <div class="details animated zoomIn fadeIn">
                     <h2>User</h2>
                     <iron-form id="userForm" allow-redirect="false">
                         <form action="" method="">
@@ -459,7 +519,7 @@
                 <paper-icon-button class="back" icon="close" on-click="_groupBack"
                                    autofocus></paper-icon-button>
 
-                <div class="details">
+                <div class="details animated zoomIn fadeIn">
                     <h2>Group</h2>
                     <iron-form id="groupForm" allow-redirect="false">
                         <form action="" method="">
@@ -632,54 +692,19 @@
             _switchPage(page) {
                 if (page == 0) {
                     this._resetUserForm();
-                    this._animUserPageOut(this.$.userPage);
-                } else if (page == 1) {
-                    this._animUserPageOut(this.$.groupPage);
-                } else if (page == 2) {
-                    // user edit page
-                    this._animUserPageIn(this.$.userPage);
-                } else if (page == 3) {
-                    this._animUserPageIn(this.$.groupPage);
                 }
                 this.$.pages.select(page);
             }
 
             _pageChanged(page) {
-                console.log('_pageChanged: ', page);
-                console.log('_pageChanged importPath: ', this.importPath);
+//                console.log('_pageChanged: ', page);
+//                console.log('_pageChanged importPath: ', this.importPath);
                 if (page == 0) {
                     this.$.loadUserList.url = this.importPath + 'api/user/';
                     this.$.loadUserList.generateRequest();
                     this.$.loadGroupList.url = this.importPath + 'api/group/';
                     this.$.loadGroupList.generateRequest();
                 }
-            }
-
-            /**
-             * animation called when form is left by the user either by using the
-             * close
-             */
-            _animUserPageOut(page) {
-                var anim = [
-                    {
-                        e: $(page),
-                        p: "transition.expandOut",
-                        o: {duration: 200, sequenceQueue: false}
-                    }
-                ];
-                setTimeout(function () {
-                    $.Velocity.RunSequence(anim);
-                }, 1);
-            }
-
-            _animUserPageIn(page) {
-                var anim = [
-                    {e: $(page), p: "scroll", o: {offset: -120, duration: 10, sequenceQueue: true}},
-                    {e: $(page), p: "transition.expandIn", o: {duration: 400}}
-                ];
-                setTimeout(function () {
-                    $.Velocity.RunSequence(anim);
-                }, 1);
             }
 
             // <<<<<<<<<< PAGE SWITCHING LOGIC AND ANIMATIONS <<<<<<<<<<
@@ -966,7 +991,7 @@
 
             _toggleManager(e, user) {
                 console.log('_toggleManager', e);
-                console.log('_toggleManager modeo', e.model.item);
+                console.log('_toggleManager model', e.model.item);
                 console.log('_toggleManager composedPath', e.composedPath());
 
 
