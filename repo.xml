@@ -11,6 +11,12 @@
     <prepare></prepare>
     <finish/>
     <changelog>
+        <change version="0.16.2">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixed scrolling bug in detail pages</li>
+                <li>added missing license file</li>
+            </ul>
+        </change>
         <change version="0.16.0">
             <ul xmls="http://www.w3.org/1999/xhtml">
                 <li>fixes #11 + #15 Problems with running in Safari</li>
