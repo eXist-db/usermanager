@@ -20,10 +20,24 @@
 
             }
 
+            app-header-layout {
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                bottom: 0px;
+                left: 0px;
+                /*height: calc(100% - 200px);*/
+                background-color: #eee;
+                overflow: hidden;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+
             app-header {
                 background: rgb(0, 136, 204);
                 padding: 0px;
                 color: white;
+                height: 60px;
             }
 
             a{
@@ -40,14 +54,13 @@
 */
         </style>
 
-        <app-header-layout fullbleed has-scrolling-region>
+        <app-header-layout id="outer" fullbleed>
             <app-header slot="header" fixed>
                 <app-toolbar>
                     <div main-title>User Manager</div>
                     <a href="index.html?logout=true">logout</a>
                 </app-toolbar>
             </app-header>
-
             <existdb-usermanager></existdb-usermanager>
         </app-header-layout>
     </template>
@@ -79,10 +92,13 @@
             connectedCallback() {
                 super.connectedCallback();
                 console.log('existdb-usermanager-app connected');
+                this.$.outer.notifyResize();
             }
 
             ready() {
                 super.ready();
+                console.log('existdb-usermanager-app ready');
+
             }
 
 

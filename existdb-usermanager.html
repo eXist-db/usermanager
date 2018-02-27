@@ -21,6 +21,9 @@
                     color: var(--paper-blue-700);
                 };
 
+                --paper-tab-ink:var(--paper-blue-300);
+
+
                 position: relative;
                 /*max-width: 600;*/
                 display: block;
@@ -29,6 +32,7 @@
             paper-tab {
                 font-size: 24px;
                 font-weight: 400;
+
             }
 
             paper-fab {
@@ -351,7 +355,6 @@
 
                 50% {
                     opacity: 0.3;
-
                 }
             }
 
@@ -361,6 +364,14 @@
                 /*animation-duration: 0.2s;*/
             }
 
+            .animated {
+                -webkit-animation-duration: 0.4s;
+                animation-duration: 0.4s;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+            }
+
+
         </style>
 
         <iron-ajax id="loadUserList"
@@ -368,8 +379,7 @@
                    method="get"
                    handle-as="json"
                    on-response="_handleUsers"
-                   on-error="_handleUserListError"
-        ></iron-ajax>
+                   on-error="_handleUserListError"></iron-ajax>
 
         <iron-ajax id="saveUser"
                    with-credentials
@@ -391,8 +401,7 @@
                    verbose with-credentials
                    method="get" handle-as="json"
                    on-response="_handleGroups"
-                   on-error="_handleGroupListError"
-        ></iron-ajax>
+                   on-error="_handleGroupListError"></iron-ajax>
 
         <iron-ajax id="saveGroup"
                    with-credentials
@@ -412,12 +421,11 @@
 
 
         <array-selector id="userselector" items="{{users}}" selected="{{selectedUser}}" multi toggle></array-selector>
-        <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi
-                        toggle></array-selector>
+        <array-selector id="groupselector" items="{{groups}}" selected="{{selectedGroup}}" multi toggle></array-selector>
 
         <iron-pages id="pages" selected="{{selected}}">
             <div>
-                <app-header-layout has-scrolling-region>
+                <app-header-layout id="userLayout" has-scrolling-region>
                     <app-header slot="header" sticky fixed>
                         <paper-tabs selected="{{selected}}">
                             <paper-tab>Users</paper-tab>
@@ -507,8 +515,7 @@
                                 </template>
                             </paper-listbox>
                             <paper-button id="save" class="save" on-tap="_handleSaveUser">save</paper-button>
-                            <paper-button id="delete" class="delete" on-tap="_handleDeleteUser">delete user
-                            </paper-button>
+                            <paper-button id="delete" class="delete" on-tap="_handleDeleteUser">delete user</paper-button>
                         </form>
                     </iron-form>
                 </div>
@@ -649,12 +656,18 @@
 
             connectedCallback() {
                 super.connectedCallback();
-//                this.$.groupMembers.addEventListener('iron-activate', e => this._handleSelection(e));
-//                this.$.groupMembers.addEventListener('iron-deselect', e => this._handleSelection(e));
+                console.log('Usermanager connectedCallback')
+
+//                this.$.loadUserList.url = this.importPath + 'api/user/';
+//                this.$.loadUserList.generateRequest();
+//                this.$.loadGroupList.url = this.importPath + 'api/group/';
+//                this.$.loadGroupList.generateRequest();
             }
 
             ready() {
                 super.ready();
+                console.log('Usermanager ready');
+
             }
 
 
@@ -697,8 +710,7 @@
             }
 
             _pageChanged(page) {
-//                console.log('_pageChanged: ', page);
-//                console.log('_pageChanged importPath: ', this.importPath);
+                console.log('_pageChanged: ', page);
                 if (page == 0) {
                     this.$.loadUserList.url = this.importPath + 'api/user/';
                     this.$.loadUserList.generateRequest();

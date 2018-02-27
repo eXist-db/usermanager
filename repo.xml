@@ -11,6 +11,12 @@
     <prepare></prepare>
     <finish/>
     <changelog>
+        <change version="0.16.0">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixes #11 + #15 Problems with running in Safari</li>
+                <li>replaced jquery/velocity dependency with simple CSS animation</li>
+            </ul>
+        </change>
         <change version="0.15.5">
             <ul xmls="http://www.w3.org/1999/xhtml">
                 <li>fixes #13 - dependency on console module removed.</li>
