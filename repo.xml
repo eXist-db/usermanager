@@ -11,6 +11,17 @@
     <prepare></prepare>
     <finish/>
     <changelog>
+        <change version="0.16.4">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>layout and responsiveness fixes</li>
+                <li>added logout option</li>
+            </ul>
+        </change>
+        <change version="0.16.3">
+            <ul xmls="http://www.w3.org/1999/xhtml">
+                <li>fixed missing dependency on functx</li>
+            </ul>
+        </change>
         <change version="0.16.2">
             <ul xmls="http://www.w3.org/1999/xhtml">
                 <li>fixed scrolling bug in detail pages</li>
