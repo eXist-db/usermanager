@@ -134,7 +134,7 @@
             .isManager {
                 margin-top: 40px;
                 position: absolute;
-                right: 80px;
+                right: 40px;
                 display: inline-block;
             }
 
@@ -531,7 +531,7 @@
                                                                     Account is disabled
                                                                 </paper-toggle-button>
                             -->
-                            <paper-input label="umask" value="{{selectedUser.umask}}"></paper-input>
+                            <paper-input label="umask" value="{{selectedUser.umask}}" type="number" max="777"></paper-input>
 
                             <div class="member-heading">Member of groups</div>
                             <paper-listbox id="memberOf" class="groupsOfUser" multi attr-for-selected="label">
@@ -579,7 +579,8 @@
                                     </paper-item>
                                     <div class="checkWrapper">
                                         <paper-checkbox checked="[[item.isManager]]"
-                                                        on-click="_toggleManager"></paper-checkbox>
+                                                        on-click="_toggleManager"
+                                                        ></paper-checkbox>
                                     </div>
                                 </template>
                             </paper-listbox>
@@ -683,7 +684,7 @@
 
             connectedCallback() {
                 super.connectedCallback();
-                console.log('Usermanager connectedCallback')
+//                console.log('Usermanager connectedCallback')
 
 //                this.$.loadUserList.url = this.importPath + 'api/user/';
 //                this.$.loadUserList.generateRequest();
@@ -707,17 +708,17 @@
             // ########################## private part ##########################
 
             _handleSelection(e) {
-                console.log('_handleSelection: ', e.composedPath());
+//                console.log('_handleSelection: ', e.composedPath());
 
                 var pathes = e.composedPath();
                 var toggle;
                 pathes.forEach(function (item) {
-                    console.log("path: ", item);
+//                    console.log("path: ", item);
                     if (item.nodeName.toLowerCase() == 'paper-toggle-button') {
                         toggle = item;
                     }
                 });
-                console.log('toggle?: ', toggle);
+//                console.log('toggle?: ', toggle);
 
                 if (toggle != undefined) {
                     e.stopPropagation();
@@ -763,7 +764,7 @@
              * handles userlist loaded from server.
              */
             _handleUsers() {
-                console.log('_handleUsers', this.$.loadUserList.lastResponse);
+//                console.log('_handleUsers', this.$.loadUserList.lastResponse);
                 this.users = this.$.loadUserList.lastResponse;
                 this.$.userLayout.resetLayout();
 //                this.$.header.resetLayout();
@@ -931,8 +932,8 @@
              * handles userlist loaded from server.
              */
             _selectGroupMembers() {
-                console.log("_selectGroupMembers ", this.selectedGroup);
-                console.log("_selectGroupMembers ", this.selectedGroup.members);
+//                console.log("_selectGroupMembers ", this.selectedGroup);
+//                console.log("_selectGroupMembers ", this.selectedGroup.members);
                 var arr = [];
 
                 if (this.selectedGroup.members == undefined) return;
@@ -940,21 +941,21 @@
                 this.selectedGroup.members.forEach(function (item) {
                     arr.push(item.member);
                 });
-                console.log("new array ", arr);
+//                console.log("new array ", arr);
                 this.$.groupMembers.selectedValues = arr;
             }
 
 
             _editGroup(e) {
-                console.log("edit group ", e.model.get('item.group'));
-                console.log("edit group selected group ", this.selectedGroup);
+//                console.log("edit group ", e.model.get('item.group'));
+//                console.log("edit group selected group ", this.selectedGroup);
 
 
                 var groupid = e.model.get('item.group');
 
                 // get current item from templated DOM Element
                 var item = this.$.groupList.itemForElement(e.target);
-                console.log("selectedGroup: ", item);
+//                console.log("selectedGroup: ", item);
                 this.selectedGroup = item;
 
                 this._selectGroupMembers();
@@ -964,6 +965,7 @@
 
             _handleGroups() {
                 this.groups = this.$.loadGroupList.lastResponse;
+//                console.log('_hanldeGroups ', this.groups);
                 this.$.userLayout.resetLayout();
 
             }
@@ -976,8 +978,8 @@
              * handler called by 'save' button
              */
             _handleAddGroup(e) {
-                console.log("add group: ", e);
-                console.log("dom repeat ", this.$.groupList);
+//                console.log("add group: ", e);
+//                console.log("dom repeat ", this.$.groupList);
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -1040,9 +1042,9 @@
             }
 
             _toggleManager(e, user) {
-                console.log('_toggleManager', e);
-                console.log('_toggleManager model', e.model.item);
-                console.log('_toggleManager composedPath', e.composedPath());
+//                console.log('_toggleManager', e);
+//                console.log('_toggleManager model', e.model.item);
+//                console.log('_toggleManager composedPath', e.composedPath());
 
 
                 var pathes = e.composedPath();
