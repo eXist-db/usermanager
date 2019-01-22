@@ -578,7 +578,7 @@
                                         <!--</paper-item-body>-->
                                     </paper-item>
                                     <div class="checkWrapper">
-                                        <paper-checkbox checked$="[[_isManager(item.user,selectedGroup)]]"
+                                        <paper-checkbox id="[[item.user]]" checked$="[[_isManager(item.user,selectedGroup)]]"
                                                         ></paper-checkbox>
                                     </div>
                                 </template>
@@ -1097,9 +1097,9 @@
             }
 
             _isManager(user, group){
-                console.log('_isManager user', user);
-                console.log('_isManager group', group);
-                console.log('_isManager group members', group.members);
+//                console.log('_isManager user', user);
+//                console.log('_isManager group', group);
+//                console.log('_isManager group members', group.members);
                 const members = group.members;
 
                 if(!members) return false;
@@ -1109,7 +1109,7 @@
                    if(item.member === user){
 
                        if(item.isManager === true){
-                           console.log('item isManager', item.isManager);
+//                           console.log('item isManager', item.isManager);
                            result =  true;
                        }
                    }
@@ -1120,7 +1120,7 @@
             }
 
             _handleSelectedGroup(){
-                console.log('_handleSelectedGroup');
+//                console.log('_handleSelectedGroup');
             }
         }
 

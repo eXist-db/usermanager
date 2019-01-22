@@ -1,52 +1,82 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
     <title>existdb-usermanager test</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../existdb-usermanager.html">
-  </head>
-  <body>
 
-    <test-fixture id="BasicTestFixture">
-      <template>
-        <existdb-usermanager></existdb-usermanager>
-      </template>
-    </test-fixture>
+    <link rel="import" href="../dependencies-local.html">
+</head>
+<body>
 
-    <test-fixture id="ChangedPropertyTestFixture">
-      <template>
-        <existdb-usermanager prop1="new-prop1"></existdb-usermanager>
-      </template>
-    </test-fixture>
+    <existdb-usermanager id="manager"></existdb-usermanager>
 
     <script>
-      suite('existdb-usermanager', function() {
+        suite('existdb-usermanager', function () {
+            const element = document.getElementById('manager');
 
-        test('instantiating the element with default properties works', function() {
-          var element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'existdb-usermanager');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello existdb-usermanager!');
+            test('selecting default page works', function () {
+                assert.equal(element.selected, 0);
+            });
+
+            test('loading of users works', function () {
+                const ajaxUsers = element.shadowRoot.querySelector('#loadUserList');
+                assert.isOk(ajaxUsers);
+                return ajaxUsers.generateRequest().completes.then(function () {
+                    assert.notEqual(element.users.length, 0);
+                    console.log("### ", element.users.length);
+
+                    /*
+                                        expect(ajax.lastResponse.form.a).to.be.equal('foo');
+                                        expect(ajax.lastResponse.form.b).to.be.equal('bar');
+                    */
+                });
+            });
+
+            test('loading of groups works', function () {
+                const ajaxGroups = element.shadowRoot.querySelector('#loadGroupList');
+                assert.isOk(ajaxGroups);
+                return ajaxGroups.generateRequest().completes.then(function () {
+                    assert.notEqual(element.groups.length, 0);
+                });
+            });
+
+            test('display of group manager flag for admin works', function () {
+                const pages = element.shadowRoot.querySelector('#pages');
+                assert.isOk(pages);
+                pages.select(1);
+                assert.equal(element.selected,1);
+
+
+                const groups = element.shadowRoot.querySelectorAll('.group-entry');
+                let dba = ""
+                for (i = 0; i < groups.length; ++i) {
+                    console.log('group', groups[i].querySelector('.group').innerText);
+                    if(groups[i].querySelector('.group').innerText === 'dba'){
+                        groups[i].click();
+                    }
+                }
+
+                // reached group editing page
+                assert.equal(element.selected,3);
+
+                //getting checkbox for admin entry
+                const adminCheck = element.shadowRoot.getElementById('admin');
+                assert.equal(adminCheck.checked, true)
+
+
+            });
+
+
+
+
         });
-
-        test('setting a property on the element works', function() {
-          // Create a test fixture
-          var element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
-        });
-
-      });
     </script>
 
-  </body>
+</body>
 </html>

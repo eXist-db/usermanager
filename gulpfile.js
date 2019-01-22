@@ -74,7 +74,8 @@ gulp.task('odd:watch', function () {
 
 var componentPaths = [
     '*.html',
-    'bower_components/**/*'
+    'bower_components/**/*',
+    'test/*.html'
 ];
 
 gulp.task('deploy:components', function () {
@@ -109,7 +110,7 @@ gulp.task('deploy', ['deploy:other', 'deploy:components', 'deploy:styles'])
 gulp.task('watch', function () {
     gulp.watch('resources/css/!*', ['deploy:styles']);
     gulp.watch(otherPaths, ['deploy:other']);
-    gulp.watch('*.html', ['deploy:components']);
+    gulp.watch(componentPaths, ['deploy:components']);
 });
 
 gulp.task('default', ['watch']);
