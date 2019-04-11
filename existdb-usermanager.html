@@ -398,6 +398,20 @@
                 animation-fill-mode: both;
             }
 
+            .count{
+                padding: 4px 8px;
+                border-radius: 18px;
+                display: inline-block;
+                border: thin solid var(--paper-blue-500);
+                position: absolute;
+                top: 6px;
+                left: 51px;
+                background: var(--paper-blue-500);
+                color: white;
+                opacity: 0.6;
+                font-size: 12px;
+                font-weight:500;
+            }
 
         </style>
 
@@ -492,6 +506,7 @@
                                 <iron-icon class="icon group-icon" icon="social:people"></iron-icon>
                                 <span class="group" title="Group">{{item.group}}</span>
                                 <span class="description">{{item.description}}</span>
+                                <span class="count" title="[[_getMemberCount(index)]] users are in this group">[[_getMemberCount(index)]]</span>
                                 <!--
                                                                 <paper-icon-button class="more" icon="expand-more"
                                                                                    on-tap="editGroup"></paper-icon-button>
@@ -579,7 +594,7 @@
                                     </paper-item>
                                     <div class="checkWrapper">
                                         <paper-checkbox id="[[item.user]]" checked$="[[_isManager(item.user,selectedGroup)]]"
-                                                        ></paper-checkbox>
+                                                        on-change="_handleManager"></paper-checkbox>
                                     </div>
                                 </template>
                             </paper-listbox>
@@ -951,6 +966,8 @@
 //                console.log("edit group ", e.model.get('item.group'));
 //                console.log("edit group selected group ", this.selectedGroup);
 
+                this.$.groupMembers.selectedValues=[];
+
                 var groupid = e.model.get('item.group');
 
                 // get current item from templated DOM Element
@@ -1011,9 +1028,34 @@
                     console.log("saving selected values... ", this.$.groupMembers.selectedValues);
 
                     var members = [];
-                    this.$.groupMembers.selectedValues.forEach(function (item) {
-                        members.push({member: item, isManager: false});
-                    });
+
+
+                    const selectedVals = this.$.groupMembers.selectedValues;
+
+                    //iterate the array of selected values in the users listbox and update members in groups array accordingly
+                    //
+                    for (var i = 0; i < selectedVals.length; i++) {
+
+                        console.log('current selected value ', selectedVals[i]);
+
+                        //lookup selected value in groups
+                        console.log('current group', this.selectedGroup);
+                        const grpmembers = this.selectedGroup.members;
+                        console.log('grpmembers ', grpmembers);
+
+                        for (var j = 0; j < grpmembers.length; j++) {
+                            console.log('item ', grpmembers[j].member, selectedVals[i]);
+
+
+                            if(grpmembers[j].member === selectedVals[i]){
+                                // if the member in the selected group is equal to the selected val in the list we update
+                                members.push(grpmembers[j]);
+                            }else{
+                                members.push({member: selectedVals[i], isManager: false});
+                            }
+                        };
+
+                    };
 
                     console.log("members: ", members);
                     this.selectedGroup.members = members;
@@ -1117,6 +1159,95 @@
 
                 return result;
 
+            }
+            _handleManager(e){
+                console.log('_handleManager ', e);
+                console.log('_handleManager groups', this.groups);
+                console.log('_handleManager model', e.model.item.user);
+                console.log('_handleManager checkbox', e.composedPath()[0]);
+
+                const checkbox = e.composedPath()[0];
+
+                //find and update group
+//                const targetGroup = this.groups.group[e.model.item.user];
+//                console.log('targetGroup ', targetGroup);
+
+                /*
+                update isManager field of members in groups.
+                 */
+                for (var i = 0; i < this.groups.length; i++) {
+                    if(this.groups[i].group === e.model.item.user){
+                        console.log('target ', this.groups[i]);
+
+
+                        const members = this.groups[i].members;
+                        console.log('members ', members);
+
+                        if(members !== undefined){
+                            members.forEach(function(item){
+                                if(item.member === e.model.item.user){
+                                    console.log('the member ', item.member);
+                                    if(checkbox.hasAttribute('checked')){
+                                        console.log('checked');
+                                        item.isManager=true;
+                                    }else{
+                                        item.isManager=false;
+                                    }
+                                    console.log('modified member ', item);
+                                }
+                            });
+                        }
+
+//                        this.selectedGroup = this.groups[i];
+
+                    }
+                }
+
+/*
+                    this.groups.forEach(function(item){
+                    if(item.group === e.model.item.user){
+                        console.log('target ', item);
+
+
+                        const members = item.members;
+                        console.log('members ', members);
+                        if(members !== undefined){
+                            members.forEach(function(item){
+                                if(item.member === e.model.item.user){
+                                    console.log('the member ', item.member);
+                                    if(checkbox.hasAttribute('checked')){
+                                        console.log('checked');
+                                        item.isManager=true;
+                                    }else{
+                                        item.isManager=false;
+                                    }
+                                    console.log('modified member ', item);
+                                }
+                            });
+                        }
+
+                        that.selectedGroup = item;
+
+                    }
+
+//                   const members = item.members
+                });
+*/
+                console.log('groups after mod ', this.groups);
+            }
+
+            _getMemberCount(index){
+//                console.log('_getMemberCount ', index);
+//                console.log('this groups ', this.groups);
+                console.log('>>> this groups ', this.groups[index]);
+                if(this.groups[index].members){
+                    console.log('>>> this groups ', this.groups[index].members);
+                    console.log('>>> this groups length', this.groups[index].members.length);
+                    return this.groups[index].members.length;
+                }else{
+                    return 0;
+                }
+//                return this.groups[index].members.length;
             }
 
             _handleSelectedGroup(){

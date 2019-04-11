@@ -67,7 +67,7 @@ declare function usermanager:list-users($pattern as xs:string) as element(json:v
 declare function usermanager:delete-user($user) as empty-sequence() {
     
     (: TODO implement secman module functions instead :)
-    xmldb:delete-user($user)
+    secman:remove-account($user)
 };
 
 declare function usermanager:get-user($user) as element(json:value) {
@@ -125,7 +125,7 @@ declare function usermanager:create-user($user-json as element(json)) as xs:stri
     $groups := $user-json/pair[@name eq "groups"][@type eq "array"]/item/string(text()) return
     (
         (: TODO implement secman module functions instead, create-group returns a boolean, decide on either boolean or error - probably error! :)
-        xmldb:create-user($user, $password, $groups, ()),
+        sm:create-account($user, $password, $groups, ()),
         if($disabled)then
             secman:set-account-enabled($user, false)       (: TODO add as an arg to secman:create-user function :)
         else(),
@@ -207,14 +207,14 @@ declare function usermanager:create-group($group-json as element(json)) as xs:st
     return
     
         (: TODO implement secman module functions instead :)
-        if(xmldb:create-group($group))then (
+        if(secman:create-group($group))then (
             secman:set-group-metadata($group, $usermanager:METADATA_DESCRIPTION_KEY, $description),
             
             for $member in $group-json/pair[@name eq "members"][@type eq "array"]/item
             let $user := $member/pair[@name eq "member"],
             $isManager := xs:boolean($member/pair[@name eq "isManager"])
             return
-                let $null := xmldb:add-user-to-group($user, $group)  (: TODO need to be able to set manager flag! :) (: TODO implement secman version instead :)
+                let $null := secman:add-group-member($user, $group)  (: TODO need to be able to set manager flag! :)
                 return
                     ()            
                 ,
@@ -258,7 +258,7 @@ declare function usermanager:update-group($group-name as xs:string, $group-json 
                         else()
                     else
                         (: remove group member :)
-                        let $null := xmldb:remove-user-from-group($existing-member, $group) return
+                        let $null := secman:remove-group-member($existing-member, $group) return
                             ()
                 ,
                 (: 2) add any new members :)
@@ -275,7 +275,7 @@ declare function usermanager:update-group($group-name as xs:string, $group-json 
                         else()
                     else
                         (: add group member :)
-                        let $null := xmldb:add-user-to-group($updated-member, $group) return (: TODO need to be able to set manager flag! :) (: TODO implement secman version instead :)
+                        let $null := secman:add-group-member($updated-member, $group) return (: TODO need to be able to set manager flag! :) (: TODO implement secman version instead :)
                             ()
             ),
             
