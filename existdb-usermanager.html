@@ -875,8 +875,7 @@
             _handleDeleteUser(e) {
                 console.log("_handleDeleteUser ", this.selectedUser.user);
                 if (confirm('Really delete this user?')) {
-                    this.$.deleteUser.url = this.rootPath + this.userUrl + this.selectedUser.user;
-                    this.$.deleteUser.url = this.importPath + 'api/user/';
+                    this.$.deleteUser.url = this.importPath + this.userUrl + this.selectedUser.user;
                     this.$.deleteUser.generateRequest();
                 }
             }
@@ -1127,4 +1126,3 @@
         window.customElements.define(ExistdbUsermanager.is, ExistdbUsermanager);
     </script>
 </dom-module>
-
