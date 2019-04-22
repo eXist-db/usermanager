@@ -198,7 +198,7 @@ declare function usermanager:group-exists($group) as xs:boolean {
 };
 
 declare function usermanager:delete-group($group) as empty-sequence() {
-    secman:delete-group($group)
+    secman:remove-group($group)
 };
 
 declare function usermanager:create-group($group-json as element(json)) as xs:string? {
