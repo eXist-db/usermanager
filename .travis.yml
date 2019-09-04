@@ -28,8 +28,7 @@ before_install:
 
 install:
   - npm ci
-  - npm install -g polymer-cli
-  - npm install -g bower
+  - npm install -g polymer-cli bower
   - bower install
   - ant production-xar
   - docker cp build/usermanager-*-prod.xar exist-ci:exist/autodeploy
@@ -41,7 +40,7 @@ before_script:
   - docker ps
 
 script:
-  - cypress run --record --key $CYPRESS_RECORD_KEY --spec \'cypress/integration/${spec}\'
+  - npm run cypress -- --record --spec \'cypress/integration/${spec}\'
 
 notifications:
   email: false
