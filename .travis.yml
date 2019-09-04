@@ -1,19 +1,14 @@
-notifications:
-  email: false
-  slack: exist-db:IXzUdqA0n11cnxaDz43ZQgdX
-
-language: node_js
-
-node_js:
-  - "node"
-  - "10"
-
+language: java
 dist: xenial
 # temporary see https://github.com/cypress-io/cypress/issues/4069
 addons:
   apt:
     packages:
     - libgconf-2-4
+
+jdk:
+  - openjdk8
+
 env:
   - img=existdb/existdb:latest spec="5.x.x/**"
   - img=existdb/existdb:release spec="5.x.x/**"
@@ -33,6 +28,9 @@ before_install:
 
 install:
   - npm ci
+  - npm install -g polymer-cli
+  - npm install -g bower
+  - bower install
   - ant production-xar
   - docker cp build/usermanager-*-prod.xar exist-ci:exist/autodeploy
 
@@ -44,3 +42,7 @@ before_script:
 
 script:
   - cypress run --record --key $CYPRESS_RECORD_KEY --spec \'cypress/integration/${spec}\'
+
+notifications:
+  email: false
+  slack: exist-db:IXzUdqA0n11cnxaDz43ZQgdX
