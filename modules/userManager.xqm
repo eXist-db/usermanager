@@ -123,10 +123,10 @@ declare function usermanager:create-user($user-json as element(json)) as xs:stri
     $umask := xs:int($user-json/pair[@name eq "umask"]),
     $groups := $user-json/pair[@name eq "groups"][@type eq "array"]/item/string(text()) return
     (
-        (: TODO implement secman module functions instead, create-group returns a boolean, decide on either boolean or error - probably error! :)
-        secman:create-account($user, $password, head($groups), tail($groups)),
+        (: TODO create-group returns a boolean, decide on either boolean or error - probably error! :)
+        secman:create-account($user, $password, $groups),
         if($disabled)then
-            secman:set-account-enabled($user, false)       (: TODO add as an arg to secman:create-user function :)
+            secman:set-account-enabled($user, false)
         else(),
         secman:set-umask($user, $umask),
         secman:set-account-metadata($user, $usermanager:METADATA_FULLNAME_KEY, $fullName),
