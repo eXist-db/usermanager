@@ -167,7 +167,7 @@ declare function usermanager:update-user($user-name as xs:string, $user-json as 
                 else(),
 
                 (: if a password is provided, we always change the password, as we dont know what the original password was :)
-                for $group in secman:get-user-groups($user) return secman:remove-group-member($group, $user),
+                for $group in secman:get-user-groups($user)[. != sm:get-user-primary-group($user)] return secman:remove-group-member($group, $user),
                 for $group in $groups return if(secman:group-exists($group)) then secman:add-group-member($group, $user) else (),
                 if($password) then secman:passwd($user, $password) else (),
 
@@ -207,7 +207,6 @@ declare function usermanager:create-group($group-json as element(json)) as xs:st
     $description := $group-json/pair[@name eq "description"]
     return
 
-        (: TODO implement secman module functions instead :)
         if(secman:create-group($group))then (
             secman:set-group-metadata($group, $usermanager:METADATA_DESCRIPTION_KEY, $description),
 
