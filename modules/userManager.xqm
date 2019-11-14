@@ -123,10 +123,10 @@ declare function usermanager:create-user($user-json as element(json)) as xs:stri
     $umask := xs:int($user-json/pair[@name eq "umask"]),
     $groups := $user-json/pair[@name eq "groups"][@type eq "array"]/item/string(text()) return
     (
-        (: TODO implement secman module functions instead, create-group returns a boolean, decide on either boolean or error - probably error! :)
-        secman:create-account($user, $password, head($groups), tail($groups)),
+        (: TODO create-group returns a boolean, decide on either boolean or error - probably error! :)
+        secman:create-account($user, $password, $groups),
         if($disabled)then
-            secman:set-account-enabled($user, false)       (: TODO add as an arg to secman:create-user function :)
+            secman:set-account-enabled($user, false)
         else(),
         secman:set-umask($user, $umask),
         secman:set-account-metadata($user, $usermanager:METADATA_FULLNAME_KEY, $fullName),
@@ -167,7 +167,7 @@ declare function usermanager:update-user($user-name as xs:string, $user-json as 
                 else(),
 
                 (: if a password is provided, we always change the password, as we dont know what the original password was :)
-                for $group in secman:get-user-groups($user) return secman:remove-group-member($group, $user),
+                for $group in secman:get-user-groups($user)[. != secman:get-user-primary-group($user)] return secman:remove-group-member($group, $user),
                 for $group in $groups return if(secman:group-exists($group)) then secman:add-group-member($group, $user) else (),
                 if($password) then secman:passwd($user, $password) else (),
 
@@ -207,7 +207,6 @@ declare function usermanager:create-group($group-json as element(json)) as xs:st
     $description := $group-json/pair[@name eq "description"]
     return
 
-        (: TODO implement secman module functions instead :)
         if(secman:create-group($group))then (
             secman:set-group-metadata($group, $usermanager:METADATA_DESCRIPTION_KEY, $description),
 
