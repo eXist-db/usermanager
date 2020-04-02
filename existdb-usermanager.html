@@ -857,8 +857,15 @@
              */
             _handleUserSaved() {
                 console.log('_handleUserSaved');
-                /* checkUser event causes existdb-login to check if the current user is still valid */
-                document.dispatchEvent(new CustomEvent('checkUser'));
+                /* checkUser event causes existdb-login to check if the current user 
+                 * is still valid and refreshes the login session
+                 */
+                document.dispatchEvent(new CustomEvent('checkUser', {
+                    detail: {
+                        user: this.selectedUser.user,
+                        password: this.selectedUser.password
+                    }
+                }));
                 this.$.messenger.text = 'User ' + this.selectedUser.user + ' has been saved.';
                 this.$.messenger.open();
                 this._switchPage(0);
