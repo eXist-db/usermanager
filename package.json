@@ -1,6 +1,6 @@
 {
   "name": "userManager",
-  "version": "1.0.0",
+  "version": "0.16.6",
   "description": "existdb-usermanager",
   "main": "index.js",
   "scripts": {
